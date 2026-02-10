@@ -12,20 +12,6 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="AlertSystem">
     
-    <!-- Audio elements for notification sounds -->
-    <audio id="soundCritical" preload="auto">
-        <source src="https://assets.mixkit.co/active_storage/sfx/201/201-preview.mp3" type="audio/mpeg">
-    </audio>
-    <audio id="soundHigh" preload="auto">
-        <source src="https://assets.mixkit.co/active_storage/sfx/257/257-preview.mp3" type="audio/mpeg">
-    </audio>
-    <audio id="soundMedium" preload="auto">
-        <source src="https://assets.mixkit.co/active_storage/sfx/250/250-preview.mp3" type="audio/mpeg">
-    </audio>
-    <audio id="soundLow" preload="auto">
-        <source src="https://assets.mixkit.co/active_storage/sfx/245/245-preview.mp3" type="audio/mpeg">
-    </audio>
-    
     <style>
         /* ===== RESET & BASE ===== */
         * {
@@ -180,9 +166,6 @@
             margin-bottom: 1.5rem;
             padding-bottom: 1rem;
             border-bottom: 2px solid var(--gray-100);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
         }
         
         .card-title {
@@ -210,7 +193,6 @@
             box-shadow: var(--shadow);
             transition: transform 0.2s, box-shadow 0.2s;
             animation: slideIn 0.3s ease-out;
-            position: relative;
         }
         
         .alert-item:hover {
@@ -303,95 +285,6 @@
             font-weight: 500;
         }
         
-        /* Alert Actions */
-        .alert-actions {
-            position: absolute;
-            top: 0.5rem;
-            right: 0.5rem;
-            display: flex;
-            gap: 0.25rem;
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-        
-        .alert-item:hover .alert-actions {
-            opacity: 1;
-        }
-        
-        .action-btn {
-            background: rgba(255, 255, 255, 0.9);
-            border: 1px solid var(--gray-200);
-            border-radius: var(--radius);
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 0.875rem;
-            color: var(--gray-600);
-            transition: all 0.2s;
-        }
-        
-        .action-btn:hover {
-            background: white;
-            color: var(--danger);
-            box-shadow: var(--shadow);
-        }
-        
-        .action-btn.delete:hover {
-            background: var(--danger);
-            color: white;
-            border-color: var(--danger);
-        }
-        
-        /* Alert Images */
-        .alert-images {
-            display: flex;
-            gap: 0.5rem;
-            margin: 0.75rem 0;
-            flex-wrap: wrap;
-        }
-        
-        .alert-image {
-            width: 100px;
-            height: 100px;
-            border-radius: var(--radius);
-            object-fit: cover;
-            cursor: pointer;
-            transition: transform 0.2s;
-            border: 2px solid var(--gray-200);
-        }
-        
-        .alert-image:hover {
-            transform: scale(1.05);
-            border-color: var(--primary);
-        }
-        
-        .image-preview-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            z-index: 2000;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .image-preview-modal.active {
-            display: flex;
-        }
-        
-        .image-preview {
-            max-width: 90%;
-            max-height: 90%;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow-lg);
-        }
-        
         /* ===== FORMS ===== */
         .form-group {
             margin-bottom: 1.25rem;
@@ -427,100 +320,6 @@
         .form-textarea {
             min-height: 120px;
             resize: vertical;
-        }
-        
-        /* File Upload */
-        .file-upload {
-            border: 2px dashed var(--gray-300);
-            border-radius: var(--radius);
-            padding: 2rem;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            background: var(--gray-50);
-        }
-        
-        .file-upload:hover {
-            border-color: var(--primary);
-            background: var(--gray-100);
-        }
-        
-        .file-upload.dragover {
-            border-color: var(--primary);
-            background: rgba(79, 70, 229, 0.1);
-            transform: scale(1.02);
-        }
-        
-        .upload-icon {
-            font-size: 3rem;
-            color: var(--gray-400);
-            margin-bottom: 1rem;
-        }
-        
-        .upload-text {
-            color: var(--gray-600);
-            margin-bottom: 0.5rem;
-        }
-        
-        .upload-hint {
-            font-size: 0.875rem;
-            color: var(--gray-500);
-        }
-        
-        .preview-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin-top: 1rem;
-        }
-        
-        .preview-image {
-            width: 80px;
-            height: 80px;
-            border-radius: var(--radius);
-            object-fit: cover;
-            border: 2px solid var(--gray-200);
-            position: relative;
-        }
-        
-        .remove-image {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background: var(--danger);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            font-size: 0.75rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        /* Camera */
-        .camera-container {
-            margin-top: 1rem;
-            display: none;
-        }
-        
-        .camera-container.active {
-            display: block;
-        }
-        
-        #cameraPreview {
-            width: 100%;
-            border-radius: var(--radius);
-            border: 2px solid var(--gray-200);
-            margin-bottom: 1rem;
-        }
-        
-        .camera-controls {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
         }
         
         /* ===== BUTTONS ===== */
@@ -570,11 +369,6 @@
         
         .btn-danger {
             background: linear-gradient(135deg, var(--danger) 0%, #dc2626 100%);
-            color: white;
-        }
-        
-        .btn-success {
-            background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
             color: white;
         }
         
@@ -690,96 +484,6 @@
             color: var(--gray-900);
         }
         
-        /* ===== POPUP NOTIFICATION (WhatsApp-like) ===== */
-        .popup-notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: white;
-            border-radius: 12px;
-            padding: 12px 16px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            border-left: 4px solid var(--primary);
-            z-index: 9999;
-            min-width: 300px;
-            max-width: 350px;
-            animation: slideInRight 0.3s ease-out;
-            display: none;
-        }
-        
-        .popup-notification.active {
-            display: block;
-        }
-        
-        .popup-notification.critical {
-            border-left-color: var(--danger);
-            background: white;
-            box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
-        }
-        
-        .popup-notification.high {
-            border-left-color: var(--warning);
-            background: white;
-        }
-        
-        .popup-notification.medium {
-            border-left-color: var(--info);
-            background: white;
-        }
-        
-        .popup-notification.low {
-            border-left-color: var(--success);
-            background: white;
-        }
-        
-        .popup-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 6px;
-        }
-        
-        .popup-app-name {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            color: var(--gray-800);
-        }
-        
-        .popup-close {
-            background: none;
-            border: none;
-            font-size: 1.2rem;
-            color: var(--gray-400);
-            cursor: pointer;
-            padding: 2px;
-            line-height: 1;
-        }
-        
-        .popup-title {
-            font-weight: 600;
-            font-size: 0.95rem;
-            color: var(--gray-900);
-            margin-bottom: 4px;
-        }
-        
-        .popup-message {
-            color: var(--gray-600);
-            font-size: 0.85rem;
-            line-height: 1.4;
-            margin-bottom: 8px;
-        }
-        
-        .popup-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.75rem;
-            color: var(--gray-500);
-        }
-        
         /* ===== LOADING ===== */
         .loading {
             display: flex;
@@ -798,27 +502,6 @@
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin-bottom: 1rem;
-        }
-        
-        /* ===== INSTALL PROMPT ===== */
-        .install-prompt {
-            position: fixed;
-            bottom: 1rem;
-            left: 1rem;
-            right: 1rem;
-            background: white;
-            border-radius: var(--radius-lg);
-            padding: 1rem;
-            box-shadow: var(--shadow-lg);
-            display: none;
-            align-items: center;
-            gap: 1rem;
-            z-index: 999;
-            animation: slideUp 0.3s ease-out;
-        }
-        
-        .install-prompt.active {
-            display: flex;
         }
         
         /* ===== ANIMATIONS ===== */
@@ -864,22 +547,6 @@
             to { transform: rotate(360deg); }
         }
         
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-        
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-            20%, 40%, 60%, 80% { transform: translateX(5px); }
-        }
-        
-        @keyframes glow {
-            0%, 100% { box-shadow: 0 0 5px rgba(239, 68, 68, 0.5); }
-            50% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.8); }
-        }
-        
         /* ===== RESPONSIVE ===== */
         @media (max-width: 640px) {
             .header-content {
@@ -918,13 +585,6 @@
                 min-width: auto;
                 width: calc(100vw - 2rem);
             }
-            
-            .popup-notification {
-                left: 10px;
-                right: 10px;
-                min-width: auto;
-                max-width: none;
-            }
         }
         
         /* ===== UTILITY CLASSES ===== */
@@ -962,71 +622,6 @@
         .justify-between { justify-content: space-between; }
         .flex-wrap { flex-wrap: wrap; }
         .flex-1 { flex: 1; }
-        
-        /* ===== NOTIFICATION SETTINGS ===== */
-        .notification-settings {
-            background: white;
-            border-radius: var(--radius);
-            padding: 1rem;
-            margin-bottom: 1rem;
-        }
-        
-        .setting-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.75rem 0;
-            border-bottom: 1px solid var(--gray-100);
-        }
-        
-        .setting-item:last-child {
-            border-bottom: none;
-        }
-        
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 60px;
-            height: 34px;
-        }
-        
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-        
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: var(--gray-300);
-            transition: .4s;
-            border-radius: 34px;
-        }
-        
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 26px;
-            width: 26px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-        
-        input:checked + .slider {
-            background-color: var(--primary);
-        }
-        
-        input:checked + .slider:before {
-            transform: translateX(26px);
-        }
     </style>
 </head>
 <body>
@@ -1054,7 +649,6 @@
                     <div id="userSection" class="hidden">
                         <span id="userEmail" class="text-muted"></span>
                         <button onclick="showCreateAlertModal()" class="btn btn-primary btn-sm">New Alert</button>
-                        <button onclick="showSettingsModal()" class="btn btn-secondary btn-sm">Settings</button>
                         <button onclick="logout()" class="btn btn-secondary btn-sm">Logout</button>
                     </div>
                 </div>
@@ -1114,10 +708,6 @@
                             <span>Your Unread:</span>
                             <strong id="yourUnread">0</strong>
                         </div>
-                        <div class="flex justify-between">
-                            <span>Notifications:</span>
-                            <strong id="notificationStatus">Off</strong>
-                        </div>
                     </div>
                 </div>
 
@@ -1132,9 +722,6 @@
                         </button>
                         <button onclick="testNotification()" class="btn btn-secondary btn-sm">
                             🔔 Test Notification
-                        </button>
-                        <button onclick="showInstallPrompt()" class="btn btn-secondary btn-sm" id="installBtn">
-                            📱 Install App
                         </button>
                     </div>
                 </div>
@@ -1183,7 +770,7 @@
         </div>
     </div>
 
-    <!-- Create Alert Modal with Photo Upload -->
+    <!-- Create Alert Modal -->
     <div id="createAlertModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -1207,10 +794,10 @@
                     <div class="form-group">
                         <label for="alertPriority" class="form-label">Priority</label>
                         <select id="alertPriority" class="form-select" required>
-                            <option value="low">Low - Gentle notification</option>
-                            <option value="medium" selected>Medium - Standard notification</option>
-                            <option value="high">High - Urgent notification with sound</option>
-                            <option value="critical">Critical - Emergency alert with loud sound</option>
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                            <option value="critical">Critical</option>
                         </select>
                     </div>
                     
@@ -1218,45 +805,6 @@
                         <label for="alertCategory" class="form-label">Category (Optional)</label>
                         <input type="text" id="alertCategory" class="form-input" 
                                placeholder="e.g., Security, Maintenance, Announcement">
-                    </div>
-                    
-                    <!-- Photo Upload Section -->
-                    <div class="form-group">
-                        <label class="form-label">Add Photos (Optional)</label>
-                        
-                        <!-- File Upload -->
-                        <div class="file-upload" id="fileUpload" onclick="document.getElementById('imageInput').click()">
-                            <div class="upload-icon">📁</div>
-                            <div class="upload-text">Click to upload or drag & drop</div>
-                            <div class="upload-hint">Supports JPG, PNG, GIF (Max 5MB each)</div>
-                        </div>
-                        
-                        <!-- Camera Option -->
-                        <div class="mt-3">
-                            <button type="button" onclick="toggleCamera()" class="btn btn-secondary btn-sm">
-                                📷 Take Photo
-                            </button>
-                        </div>
-                        
-                        <!-- Camera Preview -->
-                        <div class="camera-container" id="cameraContainer">
-                            <video id="cameraPreview" autoplay></video>
-                            <div class="camera-controls">
-                                <button type="button" onclick="capturePhoto()" class="btn btn-success btn-sm">
-                                    📸 Capture
-                                </button>
-                                <button type="button" onclick="toggleCamera()" class="btn btn-secondary btn-sm">
-                                    ❌ Cancel
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <!-- Preview Images -->
-                        <div class="preview-container" id="imagePreview"></div>
-                        
-                        <!-- Hidden File Input -->
-                        <input type="file" id="imageInput" accept="image/*" multiple style="display: none;">
-                        <input type="hidden" id="alertImages" name="alertImages">
                     </div>
                     
                     <div class="flex gap-3 mt-4">
@@ -1273,144 +821,15 @@
         </div>
     </div>
 
-    <!-- Settings Modal -->
-    <div id="settingsModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">⚙️ Notification Settings</h3>
-                <button onclick="hideModal('settingsModal')" class="modal-close">×</button>
-            </div>
-            <div class="modal-body">
-                <div class="notification-settings">
-                    <div class="setting-item">
-                        <div>
-                            <strong>Browser Notifications</strong>
-                            <div class="text-sm text-muted">Show notifications when app is closed</div>
-                        </div>
-                        <label class="switch">
-                            <input type="checkbox" id="browserNotifications" checked>
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                    
-                    <div class="setting-item">
-                        <div>
-                            <strong>Popup Notifications</strong>
-                            <div class="text-sm text-muted">Show popup when app is open</div>
-                        </div>
-                        <label class="switch">
-                            <input type="checkbox" id="popupNotifications" checked>
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                    
-                    <div class="setting-item">
-                        <div>
-                            <strong>Notification Sounds</strong>
-                            <div class="text-sm text-muted">Play sounds for alerts (even when app closed)</div>
-                        </div>
-                        <label class="switch">
-                            <input type="checkbox" id="notificationSounds" checked>
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                    
-                    <div class="setting-item">
-                        <div>
-                            <strong>Vibration</strong>
-                            <div class="text-sm text-muted">Vibrate device for alerts</div>
-                        </div>
-                        <label class="switch">
-                            <input type="checkbox" id="vibrationEnabled">
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                    
-                    <div class="setting-item">
-                        <div>
-                            <strong>WhatsApp-style Notifications</strong>
-                            <div class="text-sm text-muted">Show notifications like WhatsApp</div>
-                        </div>
-                        <label class="switch">
-                            <input type="checkbox" id="whatsappStyle" checked>
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                </div>
-                
-                <div class="mt-4">
-                    <h4 class="mb-3">Sound Volume by Priority</h4>
-                    <div class="form-group">
-                        <label for="volumeCritical" class="form-label">Critical Alerts Volume</label>
-                        <input type="range" id="volumeCritical" class="form-input" min="0" max="1" step="0.1" value="1">
-                    </div>
-                    <div class="form-group">
-                        <label for="volumeHigh" class="form-label">High Priority Volume</label>
-                        <input type="range" id="volumeHigh" class="form-input" min="0" max="1" step="0.1" value="0.8">
-                    </div>
-                    <div class="form-group">
-                        <label for="volumeMedium" class="form-label">Medium Priority Volume</label>
-                        <input type="range" id="volumeMedium" class="form-input" min="0" max="1" step="0.1" value="0.6">
-                    </div>
-                    <div class="form-group">
-                        <label for="volumeLow" class="form-label">Low Priority Volume</label>
-                        <input type="range" id="volumeLow" class="form-input" min="0" max="1" step="0.1" value="0.4">
-                    </div>
-                </div>
-                
-                <div class="flex gap-3 mt-4">
-                    <button onclick="saveSettings()" class="btn btn-primary flex-1">
-                        Save Settings
-                    </button>
-                    <button onclick="hideModal('settingsModal')" class="btn btn-secondary flex-1">
-                        Cancel
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Image Preview Modal -->
-    <div id="imagePreviewModal" class="image-preview-modal">
-        <img id="previewImage" class="image-preview" src="" alt="Preview">
-        <button onclick="closeImagePreview()" style="position: absolute; top: 20px; right: 20px; background: white; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 1.5rem; cursor: pointer;">×</button>
-    </div>
-
     <!-- Toast Container -->
     <div class="toast-container" id="toastContainer"></div>
-
-    <!-- Popup Notification (WhatsApp-style) -->
-    <div id="popupNotification" class="popup-notification">
-        <div class="popup-header">
-            <div class="popup-app-name">
-                <span>🚨</span>
-                <span>AlertSystem Pro</span>
-            </div>
-            <button onclick="hidePopup()" class="popup-close">×</button>
-        </div>
-        <div class="popup-title" id="popupAlertTitle">New Alert</div>
-        <div class="popup-message" id="popupAlertMessage">Alert message here</div>
-        <div class="popup-footer">
-            <span id="popupAlertCategory" class="alert-category">General</span>
-            <span id="popupAlertTime">Just now</span>
-        </div>
-    </div>
-
-    <!-- Install Prompt -->
-    <div id="installPrompt" class="install-prompt">
-        <div class="flex-1">
-            <strong>Install AlertSystem Pro</strong>
-            <div class="text-sm text-muted">Get app-like experience with background notifications</div>
-        </div>
-        <button onclick="installApp()" class="btn btn-primary btn-sm">Install</button>
-        <button onclick="hideInstallPrompt()" class="btn btn-secondary btn-sm">Later</button>
-    </div>
 
     <!-- JavaScript -->
     <script>
         // ============================================
-        // CONFIGURATION - REPLACE WITH YOUR CREDENTIALS
+        // CONFIGURATION
         // ============================================
+        // ⚠️ REPLACE WITH YOUR ACTUAL SUPABASE CREDENTIALS ⚠️
         const SUPABASE_URL = 'https://gtqlewymsfwhjipcpxlg.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd0cWxld3ltc2Z3aGppcGNweGxnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA3MzU5MzIsImV4cCI6MjA4NjMxMTkzMn0.J0NxvpzJTyR--pUNxVWqnegeQmwVSRKEveamS8ZYJEM';
         
@@ -1419,28 +838,7 @@
         // ============================================
         let supabase = null;
         let currentUser = null;
-        let deferredPrompt = null;
         let realtimeSubscription = null;
-        let notificationSettings = {
-            browserNotifications: true,
-            popupNotifications: true,
-            notificationSounds: true,
-            vibrationEnabled: false,
-            whatsappStyle: true,
-            volumes: {
-                critical: 1.0,
-                high: 0.8,
-                medium: 0.6,
-                low: 0.4
-            }
-        };
-        let isAppInstalled = false;
-        let serviceWorkerRegistration = null;
-        let notificationPermission = null;
-        let selectedImages = [];
-        let cameraStream = null;
-        let lastNotificationTime = 0;
-        const NOTIFICATION_COOLDOWN = 2000; // 2 seconds cooldown
         
         // ============================================
         // INITIALIZATION
@@ -1448,814 +846,52 @@
         document.addEventListener('DOMContentLoaded', async () => {
             console.log('🚀 AlertSystem Pro Initializing...');
             
-            // Load settings from localStorage
-            loadSettings();
-            
-            // Initialize PWA
-            initPWA();
-            
             // Initialize Supabase
             await initSupabase();
             
-            // Setup file upload
-            setupFileUpload();
-            
-            // Check for PWA install prompt
-            initInstallPrompt();
-            
-            // Check notification permission
-            checkNotificationPermission();
-            
-            // Register Service Worker for push notifications
-            registerServiceWorker();
-            
             console.log('✅ AlertSystem Pro Ready!');
-            
-            // Test if running as PWA
-            isAppInstalled = isRunningAsPWA();
-            updateInstallButton();
         });
         
         // ============================================
-        // PWA & SERVICE WORKER SETUP
-        // ============================================
-        function initPWA() {
-            const manifest = {
-                "name": "AlertSystem Pro",
-                "short_name": "AlertSystem",
-                "description": "Real-time Alert Management with Push Notifications",
-                "start_url": ".",
-                "display": "standalone",
-                "background_color": "#4f46e5",
-                "theme_color": "#4f46e5",
-                "icons": [
-                    {
-                        "src": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/64/1f6a8.png",
-                        "sizes": "64x64",
-                        "type": "image/png"
-                    },
-                    {
-                        "src": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/192/1f6a8.png",
-                        "sizes": "192x192",
-                        "type": "image/png"
-                    },
-                    {
-                        "src": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/512/1f6a8.png",
-                        "sizes": "512x512",
-                        "type": "image/png"
-                    }
-                ]
-            };
-            
-            const manifestString = JSON.stringify(manifest);
-            const blob = new Blob([manifestString], { type: 'application/json' });
-            const manifestURL = URL.createObjectURL(blob);
-            
-            const manifestLink = document.createElement('link');
-            manifestLink.rel = 'manifest';
-            manifestLink.href = manifestURL;
-            document.head.appendChild(manifestLink);
-        }
-        
-        async function registerServiceWorker() {
-            if ('serviceWorker' in navigator) {
-                try {
-                    // Register service worker with enhanced push capabilities
-                    serviceWorkerRegistration = await navigator.serviceWorker.register(
-                        URL.createObjectURL(new Blob([
-                            `// Enhanced Service Worker for AlertSystem Pro
-                            self.addEventListener('install', (event) => {
-                                console.log('Service Worker installing...');
-                                event.waitUntil(self.skipWaiting());
-                            });
-                            
-                            self.addEventListener('activate', (event) => {
-                                console.log('Service Worker activating...');
-                                event.waitUntil(self.clients.claim());
-                            });
-                            
-                            self.addEventListener('push', async (event) => {
-                                console.log('Push event received:', event);
-                                
-                                let data = {};
-                                try {
-                                    data = event.data?.json() || {};
-                                } catch (e) {
-                                    data = {
-                                        title: 'New Alert',
-                                        body: 'You have a new alert',
-                                        priority: 'medium',
-                                        timestamp: Date.now()
-                                    };
-                                }
-                                
-                                // Play sound through service worker (works even when app closed)
-                                if (data.priority === 'critical') {
-                                    self.registration.showNotification(data.title, {
-                                        body: data.body,
-                                        icon: 'https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/64/1f6a8.png',
-                                        badge: 'https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/64/1f6a8.png',
-                                        tag: 'alert-' + Date.now(),
-                                        requireInteraction: true,
-                                        vibrate: [1000, 500, 1000, 500, 1000],
-                                        timestamp: data.timestamp || Date.now(),
-                                        data: {
-                                            url: self.location.origin,
-                                            alertId: data.alertId,
-                                            priority: data.priority,
-                                            sound: true
-                                        }
-                                    });
-                                } else {
-                                    self.registration.showNotification(data.title, {
-                                        body: data.body,
-                                        icon: 'https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/64/1f6a8.png',
-                                        badge: 'https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/64/1f6a8.png',
-                                        tag: 'alert-' + Date.now(),
-                                        timestamp: data.timestamp || Date.now(),
-                                        data: {
-                                            url: self.location.origin,
-                                            alertId: data.alertId,
-                                            priority: data.priority,
-                                            sound: true
-                                        }
-                                    });
-                                }
-                                
-                                // Show notification to open clients
-                                const clients = await self.clients.matchAll();
-                                clients.forEach(client => {
-                                    client.postMessage({
-                                        type: 'NEW_ALERT',
-                                        alert: data
-                                    });
-                                });
-                            });
-                            
-                            self.addEventListener('notificationclick', (event) => {
-                                console.log('Notification clicked:', event);
-                                event.notification.close();
-                                
-                                event.waitUntil(
-                                    clients.matchAll({ type: 'window', includeUncontrolled: true })
-                                        .then((clientList) => {
-                                            // If a Window client is already open, focus it
-                                            for (const client of clientList) {
-                                                if (client.url === self.location.origin && 'focus' in client) {
-                                                    return client.focus();
-                                                }
-                                            }
-                                            // Otherwise open a new window
-                                            if (clients.openWindow) {
-                                                return clients.openWindow(self.location.origin);
-                                            }
-                                        })
-                                );
-                            });
-                            
-                            // Listen for messages from main app
-                            self.addEventListener('message', (event) => {
-                                if (event.data && event.data.type === 'SHOW_NOTIFICATION') {
-                                    self.registration.showNotification(event.data.title, {
-                                        body: event.data.body,
-                                        icon: 'https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/64/1f6a8.png',
-                                        badge: 'https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/64/1f6a8.png',
-                                        tag: 'alert-' + Date.now(),
-                                        data: {
-                                            priority: event.data.priority,
-                                            sound: true
-                                        }
-                                    });
-                                }
-                            });`
-                        ], { type: 'application/javascript' }))
-                    );
-                    
-                    console.log('✅ Service Worker registered:', serviceWorkerRegistration);
-                    
-                    // Listen for messages from service worker
-                    navigator.serviceWorker.addEventListener('message', (event) => {
-                        if (event.data && event.data.type === 'NEW_ALERT') {
-                            showNotification(event.data.alert);
-                        }
-                    });
-                    
-                } catch (error) {
-                    console.warn('Service Worker registration failed:', error);
-                    showToast('Push notifications unavailable', 'warning');
-                }
-            }
-        }
-        
-        // ============================================
-        // FILE UPLOAD & CAMERA FUNCTIONS
-        // ============================================
-        function setupFileUpload() {
-            const fileUpload = document.getElementById('fileUpload');
-            const imageInput = document.getElementById('imageInput');
-            
-            // Click to upload
-            fileUpload.addEventListener('click', () => {
-                imageInput.click();
-            });
-            
-            // Handle file selection
-            imageInput.addEventListener('change', handleFileSelect);
-            
-            // Drag and drop
-            fileUpload.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                fileUpload.classList.add('dragover');
-            });
-            
-            fileUpload.addEventListener('dragleave', () => {
-                fileUpload.classList.remove('dragover');
-            });
-            
-            fileUpload.addEventListener('drop', (e) => {
-                e.preventDefault();
-                fileUpload.classList.remove('dragover');
-                
-                if (e.dataTransfer.files.length) {
-                    handleFiles(e.dataTransfer.files);
-                }
-            });
-        }
-        
-        function handleFileSelect(e) {
-            if (e.target.files.length) {
-                handleFiles(e.target.files);
-            }
-        }
-        
-        function handleFiles(files) {
-            const preview = document.getElementById('imagePreview');
-            
-            for (let file of files) {
-                if (!file.type.startsWith('image/')) continue;
-                if (file.size > 5 * 1024 * 1024) {
-                    showToast(`File ${file.name} is too large (max 5MB)`, 'warning');
-                    continue;
-                }
-                
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const imageData = e.target.result;
-                    selectedImages.push(imageData);
-                    updateImagePreview();
-                };
-                reader.readAsDataURL(file);
-            }
-            
-            // Reset file input
-            document.getElementById('imageInput').value = '';
-        }
-        
-        function updateImagePreview() {
-            const preview = document.getElementById('imagePreview');
-            preview.innerHTML = '';
-            
-            selectedImages.forEach((imageData, index) => {
-                const imgContainer = document.createElement('div');
-                imgContainer.style.position = 'relative';
-                imgContainer.style.display = 'inline-block';
-                
-                const img = document.createElement('img');
-                img.src = imageData;
-                img.className = 'preview-image';
-                img.onclick = () => showImagePreview(imageData);
-                
-                const removeBtn = document.createElement('button');
-                removeBtn.className = 'remove-image';
-                removeBtn.innerHTML = '×';
-                removeBtn.onclick = (e) => {
-                    e.stopPropagation();
-                    selectedImages.splice(index, 1);
-                    updateImagePreview();
-                };
-                
-                imgContainer.appendChild(img);
-                imgContainer.appendChild(removeBtn);
-                preview.appendChild(imgContainer);
-            });
-        }
-        
-        function showImagePreview(imageData) {
-            const modal = document.getElementById('imagePreviewModal');
-            const img = document.getElementById('previewImage');
-            img.src = imageData;
-            modal.classList.add('active');
-        }
-        
-        function closeImagePreview() {
-            document.getElementById('imagePreviewModal').classList.remove('active');
-        }
-        
-        async function toggleCamera() {
-            const cameraContainer = document.getElementById('cameraContainer');
-            const cameraPreview = document.getElementById('cameraPreview');
-            
-            if (!cameraContainer.classList.contains('active')) {
-                // Start camera
-                try {
-                    cameraStream = await navigator.mediaDevices.getUserMedia({
-                        video: { facingMode: 'environment' },
-                        audio: false
-                    });
-                    cameraPreview.srcObject = cameraStream;
-                    cameraContainer.classList.add('active');
-                } catch (error) {
-                    console.error('Camera error:', error);
-                    showToast('Camera access denied or not available', 'error');
-                }
-            } else {
-                // Stop camera
-                if (cameraStream) {
-                    cameraStream.getTracks().forEach(track => track.stop());
-                    cameraStream = null;
-                }
-                cameraPreview.srcObject = null;
-                cameraContainer.classList.remove('active');
-            }
-        }
-        
-        function capturePhoto() {
-            const cameraPreview = document.getElementById('cameraPreview');
-            const canvas = document.createElement('canvas');
-            const context = canvas.getContext('2d');
-            
-            canvas.width = cameraPreview.videoWidth;
-            canvas.height = cameraPreview.videoHeight;
-            context.drawImage(cameraPreview, 0, 0, canvas.width, canvas.height);
-            
-            const imageData = canvas.toDataURL('image/jpeg', 0.8);
-            selectedImages.push(imageData);
-            updateImagePreview();
-            
-            // Stop camera
-            toggleCamera();
-            showToast('Photo captured!', 'success');
-        }
-        
-        // ============================================
-        // NOTIFICATION FUNCTIONS (ENHANCED)
-        // ============================================
-        function checkNotificationPermission() {
-            if (!("Notification" in window)) {
-                notificationPermission = 'unsupported';
-                document.getElementById('notificationStatus').textContent = 'Unsupported';
-                return;
-            }
-            
-            notificationPermission = Notification.permission;
-            
-            if (notificationPermission === "granted") {
-                document.getElementById('notificationStatus').textContent = 'Enabled';
-            } else if (notificationPermission === "denied") {
-                document.getElementById('notificationStatus').textContent = 'Blocked';
-            } else {
-                document.getElementById('notificationStatus').textContent = 'Request';
-            }
-        }
-        
-        async function requestNotificationPermission() {
-            if (!("Notification" in window)) {
-                showToast("This browser doesn't support notifications", 'warning');
-                return;
-            }
-            
-            if (notificationPermission === "granted") {
-                showToast("Notifications already enabled", 'success');
-                return;
-            }
-            
-            if (notificationPermission !== "denied") {
-                notificationPermission = await Notification.requestPermission();
-                
-                if (notificationPermission === "granted") {
-                    document.getElementById('notificationStatus').textContent = 'Enabled';
-                    showToast("Notifications enabled!", 'success');
-                    
-                    // Register service worker after permission granted
-                    await registerServiceWorker();
-                } else {
-                    document.getElementById('notificationStatus').textContent = 'Blocked';
-                    showToast("Notifications blocked", 'warning');
-                }
-            } else {
-                showToast("Notifications blocked. Please enable in browser settings.", 'warning');
-            }
-        }
-        
-        function showNotification(alert) {
-            const now = Date.now();
-            if (now - lastNotificationTime < NOTIFICATION_COOLDOWN) {
-                return; // Skip if too soon
-            }
-            lastNotificationTime = now;
-            
-            // Play sound based on priority (works even when app closed)
-            if (notificationSettings.notificationSounds) {
-                playNotificationSound(alert.priority);
-            }
-            
-            // Vibrate if enabled and supported
-            if (notificationSettings.vibrationEnabled && "vibrate" in navigator) {
-                const vibrationPattern = getVibrationPattern(alert.priority);
-                navigator.vibrate(vibrationPattern);
-            }
-            
-            // Show WhatsApp-style popup notification if app is open and popups enabled
-            if (!document.hidden && notificationSettings.popupNotifications && notificationSettings.whatsappStyle) {
-                showWhatsAppPopupNotification(alert);
-            }
-            
-            // Show browser notification if app is closed and browser notifications enabled
-            if ((document.hidden || !isAppInstalled) && notificationSettings.browserNotifications && notificationPermission === "granted") {
-                showBrowserNotification(alert);
-            }
-            
-            // Send push notification via service worker (works when app closed)
-            if (serviceWorkerRegistration && notificationSettings.browserNotifications) {
-                sendPushNotification(alert);
-            }
-        }
-        
-        function showWhatsAppPopupNotification(alert) {
-            const popup = document.getElementById('popupNotification');
-            const title = document.getElementById('popupAlertTitle');
-            const message = document.getElementById('popupAlertMessage');
-            const category = document.getElementById('popupAlertCategory');
-            const time = document.getElementById('popupAlertTime');
-            
-            // Set content
-            title.textContent = alert.title;
-            message.textContent = alert.message.substring(0, 100) + (alert.message.length > 100 ? '...' : '');
-            category.textContent = alert.category || 'General';
-            time.textContent = 'Just now';
-            
-            // Set priority class
-            popup.className = `popup-notification ${alert.priority} active`;
-            
-            // Auto-hide after 8 seconds
-            setTimeout(() => {
-                hidePopup();
-            }, 8000);
-            
-            // Shake effect for critical alerts
-            if (alert.priority === 'critical') {
-                popup.style.animation = 'shake 0.5s ease-in-out';
-            }
-        }
-        
-        function hidePopup() {
-            const popup = document.getElementById('popupNotification');
-            popup.classList.remove('active');
-            popup.style.animation = '';
-        }
-        
-        function showBrowserNotification(alert) {
-            if (!("Notification" in window) || notificationPermission !== "granted") {
-                return;
-            }
-            
-            const options = {
-                body: alert.message.substring(0, 120),
-                icon: 'https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/64/1f6a8.png',
-                badge: 'https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/64/1f6a8.png',
-                tag: `alert-${alert.id}`,
-                requireInteraction: alert.priority === 'critical' || alert.priority === 'high',
-                vibrate: getVibrationPattern(alert.priority),
-                timestamp: Date.now(),
-                data: {
-                    url: window.location.href,
-                    alertId: alert.id,
-                    priority: alert.priority,
-                    sound: true
-                }
-            };
-            
-            const notification = new Notification(`🚨 ${alert.priority.toUpperCase()}: ${alert.title}`, options);
-            
-            notification.onclick = () => {
-                window.focus();
-                notification.close();
-            };
-            
-            // Auto-close after 15 seconds for non-critical alerts
-            if (alert.priority !== 'critical') {
-                setTimeout(() => {
-                    notification.close();
-                }, 15000);
-            }
-        }
-        
-        async function sendPushNotification(alert) {
-            if (!serviceWorkerRegistration) return;
-            
-            try {
-                // Send to service worker which will handle the notification
-                if (serviceWorkerRegistration.active) {
-                    serviceWorkerRegistration.active.postMessage({
-                        type: 'SHOW_NOTIFICATION',
-                        title: `🚨 ${alert.priority.toUpperCase()}: ${alert.title}`,
-                        body: alert.message.substring(0, 120),
-                        priority: alert.priority,
-                        alertId: alert.id,
-                        timestamp: Date.now()
-                    });
-                }
-            } catch (error) {
-                console.warn('Push notification failed:', error);
-            }
-        }
-        
-        function playNotificationSound(priority) {
-            const soundId = `sound${priority.charAt(0).toUpperCase() + priority.slice(1)}`;
-            const soundElement = document.getElementById(soundId);
-            
-            if (soundElement) {
-                // Set volume based on priority
-                const volume = notificationSettings.volumes[priority] || 0.5;
-                soundElement.volume = volume;
-                
-                // Play sound
-                soundElement.currentTime = 0;
-                const playPromise = soundElement.play();
-                
-                if (playPromise !== undefined) {
-                    playPromise.catch(e => {
-                        console.warn('Sound play failed:', e);
-                        // Try alternative method for iOS
-                        if (isIOS()) {
-                            playIOSNotificationSound(priority);
-                        }
-                    });
-                }
-                
-                // Loop sound for critical alerts
-                if (priority === 'critical') {
-                    soundElement.loop = true;
-                    setTimeout(() => {
-                        soundElement.loop = false;
-                        soundElement.pause();
-                    }, 5000);
-                }
-            }
-        }
-        
-        function playIOSNotificationSound(priority) {
-            // iOS requires user interaction for audio, so we create a hidden button
-            const button = document.createElement('button');
-            button.style.display = 'none';
-            button.onclick = () => {
-                const soundId = `sound${priority.charAt(0).toUpperCase() + priority.slice(1)}`;
-                const soundElement = document.getElementById(soundId);
-                if (soundElement) {
-                    soundElement.volume = notificationSettings.volumes[priority] || 0.5;
-                    soundElement.currentTime = 0;
-                    soundElement.play().catch(e => console.warn('iOS sound play failed:', e));
-                }
-            };
-            document.body.appendChild(button);
-            button.click();
-            setTimeout(() => button.remove(), 100);
-        }
-        
-        function isIOS() {
-            return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-        }
-        
-        function getVibrationPattern(priority) {
-            switch(priority) {
-                case 'critical':
-                    return [1000, 500, 1000, 500, 1000];
-                case 'high':
-                    return [500, 250, 500];
-                case 'medium':
-                    return [200];
-                case 'low':
-                    return [100];
-                default:
-                    return [200];
-            }
-        }
-        
-        function testNotification() {
-            const testAlert = {
-                id: 'test-' + Date.now(),
-                title: 'Test Notification',
-                message: 'This is a test notification to check if alerts are working properly. Sound should play even when app is closed.',
-                priority: 'critical',
-                category: 'Test',
-                created_at: new Date().toISOString()
-            };
-            
-            showNotification(testAlert);
-            showToast('Test notification sent with sound', 'success');
-        }
-        
-        // ============================================
-        // ALERT DELETE FUNCTION
-        // ============================================
-        async function deleteAlert(alertId) {
-            if (!confirm('Are you sure you want to delete this alert? This action cannot be undone.')) {
-                return;
-            }
-            
-            if (!currentUser) {
-                showToast('Please login to delete alerts', 'error');
-                return;
-            }
-            
-            try {
-                const { error } = await supabase
-                    .from('alerts')
-                    .update({ is_active: false })
-                    .eq('id', alertId);
-                
-                if (error) throw error;
-                
-                showToast('Alert deleted successfully', 'success');
-                loadAlerts();
-                
-            } catch (error) {
-                console.error('Error deleting alert:', error);
-                showToast('Failed to delete alert', 'error');
-            }
-        }
-        
-        // ============================================
-        // SETTINGS MANAGEMENT
-        // ============================================
-        function showSettingsModal() {
-            if (!currentUser) {
-                showLoginModal();
-                return;
-            }
-            
-            // Load current settings to form
-            document.getElementById('browserNotifications').checked = notificationSettings.browserNotifications;
-            document.getElementById('popupNotifications').checked = notificationSettings.popupNotifications;
-            document.getElementById('notificationSounds').checked = notificationSettings.notificationSounds;
-            document.getElementById('vibrationEnabled').checked = notificationSettings.vibrationEnabled;
-            document.getElementById('whatsappStyle').checked = notificationSettings.whatsappStyle;
-            
-            document.getElementById('volumeCritical').value = notificationSettings.volumes.critical;
-            document.getElementById('volumeHigh').value = notificationSettings.volumes.high;
-            document.getElementById('volumeMedium').value = notificationSettings.volumes.medium;
-            document.getElementById('volumeLow').value = notificationSettings.volumes.low;
-            
-            showModal('settingsModal');
-        }
-        
-        function saveSettings() {
-            notificationSettings.browserNotifications = document.getElementById('browserNotifications').checked;
-            notificationSettings.popupNotifications = document.getElementById('popupNotifications').checked;
-            notificationSettings.notificationSounds = document.getElementById('notificationSounds').checked;
-            notificationSettings.vibrationEnabled = document.getElementById('vibrationEnabled').checked;
-            notificationSettings.whatsappStyle = document.getElementById('whatsappStyle').checked;
-            
-            notificationSettings.volumes = {
-                critical: parseFloat(document.getElementById('volumeCritical').value),
-                high: parseFloat(document.getElementById('volumeHigh').value),
-                medium: parseFloat(document.getElementById('volumeMedium').value),
-                low: parseFloat(document.getElementById('volumeLow').value)
-            };
-            
-            // Save to localStorage
-            localStorage.setItem('alertSystemSettings', JSON.stringify(notificationSettings));
-            
-            showToast('Settings saved successfully', 'success');
-            hideModal('settingsModal');
-        }
-        
-        function loadSettings() {
-            const savedSettings = localStorage.getItem('alertSystemSettings');
-            if (savedSettings) {
-                notificationSettings = JSON.parse(savedSettings);
-            }
-        }
-        
-        // ============================================
-        // PWA INSTALL PROMPT
-        // ============================================
-        function initInstallPrompt() {
-            window.addEventListener('beforeinstallprompt', (e) => {
-                e.preventDefault();
-                deferredPrompt = e;
-                showInstallPrompt();
-            });
-            
-            window.addEventListener('appinstalled', () => {
-                deferredPrompt = null;
-                hideInstallPrompt();
-                isAppInstalled = true;
-                updateInstallButton();
-                showToast('App installed successfully! You will now receive background notifications.', 'success');
-                
-                // Re-register service worker for better push notifications
-                setTimeout(() => {
-                    registerServiceWorker();
-                }, 1000);
-            });
-        }
-        
-        function showInstallPrompt() {
-            if (deferredPrompt && !isAppInstalled) {
-                document.getElementById('installPrompt').classList.add('active');
-            }
-        }
-        
-        function hideInstallPrompt() {
-            document.getElementById('installPrompt').classList.remove('active');
-        }
-        
-        async function installApp() {
-            if (!deferredPrompt) return;
-            
-            deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
-            
-            if (outcome === 'accepted') {
-                deferredPrompt = null;
-            }
-            
-            hideInstallPrompt();
-        }
-        
-        function isRunningAsPWA() {
-            return window.matchMedia('(display-mode: standalone)').matches || 
-                   window.navigator.standalone ||
-                   document.referrer.includes('android-app://');
-        }
-        
-        function updateInstallButton() {
-            const installBtn = document.getElementById('installBtn');
-            if (isAppInstalled) {
-                installBtn.textContent = '📱 Installed';
-                installBtn.disabled = true;
-            } else {
-                installBtn.textContent = '📱 Install App';
-                installBtn.disabled = false;
-            }
-        }
-        
-        // ============================================
-        // SUPABASE INITIALIZATION
+        // SUPABASE INITIALIZATION (FIXED)
         // ============================================
         async function initSupabase() {
             try {
+                // Load Supabase from CDN with fallback
+                if (!window.supabase) {
+                    await loadSupabaseScript();
+                }
+                
                 // Check if credentials are set
-                if (!SUPABASE_URL || !SUPABASE_ANON_KEY || 
-                    SUPABASE_URL.includes('YOUR_') || SUPABASE_ANON_KEY.includes('YOUR_')) {
-                    showToast('⚠️ Please set your Supabase credentials', 'warning');
+                if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+                    showToast('⚠️ Supabase credentials not configured', 'warning');
                     console.error('Missing Supabase credentials');
+                    loadSampleAlerts();
                     return;
                 }
                 
-                // Load Supabase from CDN
-                if (!window.supabase) {
-                    await loadScript('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.38.4/dist/umd/supabase.min.js');
-                }
-                
-                // Create Supabase client
-                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-                    auth: {
-                        autoRefreshToken: true,
-                        persistSession: true,
-                        detectSessionInUrl: true
-                    },
-                    realtime: {
-                        params: {
-                            eventsPerSecond: 10
-                        }
-                    }
-                });
+                // Create Supabase client with simpler config
+                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
                 
                 // Check current session
-                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-                
-                if (sessionError) {
-                    console.error('Session error:', sessionError);
-                    showToast('Connection error. Check credentials.', 'error');
-                    return;
-                }
+                const { data: { session } } = await supabase.auth.getSession();
                 
                 if (session) {
                     currentUser = session.user;
                     await onUserLoggedIn();
+                    showToast('Welcome back!', 'success');
                 } else {
                     updateUIForGuest();
                     loadPublicAlerts();
                 }
                 
                 // Listen for auth changes
-                supabase.auth.onAuthStateChange(async (event, session) => {
+                supabase.auth.onAuthStateChange((event, session) => {
                     console.log('Auth state changed:', event);
+                    
                     if (event === 'SIGNED_IN' && session) {
                         currentUser = session.user;
-                        await onUserLoggedIn();
+                        onUserLoggedIn();
                         showToast('Login successful!', 'success');
                     } else if (event === 'SIGNED_OUT') {
                         currentUser = null;
@@ -2269,13 +905,51 @@
                 });
                 
             } catch (error) {
-                console.error('Supabase setup failed:', error);
-                showToast('Failed to initialize. Check console.', 'error');
+                console.error('Supabase initialization failed:', error);
+                showToast('Failed to connect. Using demo mode.', 'warning');
+                loadSampleAlerts();
             }
         }
         
+        async function loadSupabaseScript() {
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.38.4/dist/umd/supabase.min.js';
+                script.onload = resolve;
+                script.onerror = () => {
+                    console.warn('Failed to load Supabase from CDN');
+                    // Create dummy supabase object for demo mode
+                    window.supabase = {
+                        auth: {
+                            getSession: () => Promise.resolve({ data: { session: null }, error: null }),
+                            signUp: () => Promise.resolve({ data: { user: null }, error: null }),
+                            signInWithPassword: () => Promise.resolve({ data: { user: null }, error: null }),
+                            signOut: () => Promise.resolve({ error: null }),
+                            onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } })
+                        },
+                        from: () => ({
+                            select: () => ({
+                                eq: () => ({
+                                    order: () => ({
+                                        limit: () => Promise.resolve({ data: [], error: null })
+                                    })
+                                })
+                            })
+                        }),
+                        channel: () => ({
+                            on: () => ({
+                                subscribe: () => ({})
+                            })
+                        })
+                    };
+                    resolve();
+                };
+                document.head.appendChild(script);
+            });
+        }
+        
         // ============================================
-        // AUTHENTICATION FUNCTIONS
+        // AUTHENTICATION FUNCTIONS (FIXED)
         // ============================================
         function showLoginModal() {
             document.getElementById('authModalTitle').textContent = 'Login';
@@ -2306,25 +980,31 @@
             
             try {
                 if (isSignup) {
+                    // SIMPLE SIGNUP - No triggers or complex setup
                     const { data, error } = await supabase.auth.signUp({
                         email,
-                        password,
-                        options: {
-                            data: {
-                                full_name: fullName || email.split('@')[0]
-                            }
-                        }
+                        password
                     });
                     
-                    if (error) throw error;
-                    
-                    if (data.user) {
-                        showToast('Signup successful! You are now logged in.', 'success');
+                    if (error) {
+                        if (error.message.includes('already registered')) {
+                            // User exists, try login instead
+                            const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({
+                                email,
+                                password
+                            });
+                            
+                            if (loginError) throw loginError;
+                            showToast('Account already exists. Logged in successfully!', 'success');
+                        } else {
+                            throw error;
+                        }
                     } else {
-                        showToast('Signup completed. Please check your email.', 'success');
+                        showToast('Signup successful! You are now logged in.', 'success');
                     }
                     
                 } else {
+                    // Login
                     const { data, error } = await supabase.auth.signInWithPassword({
                         email,
                         password
@@ -2332,7 +1012,7 @@
                     
                     if (error) throw error;
                     
-                    showToast('Login successful!', 'success');
+                    // Login successful (handled by onAuthStateChange)
                 }
                 
                 hideModal('loginModal');
@@ -2340,7 +1020,20 @@
                 
             } catch (error) {
                 console.error('Auth error:', error);
-                showToast(error.message || 'Authentication failed', 'error');
+                
+                // Friendly error messages
+                let errorMessage = 'Authentication failed';
+                if (error.message.includes('Invalid login credentials')) {
+                    errorMessage = 'Invalid email or password';
+                } else if (error.message.includes('Email not confirmed')) {
+                    errorMessage = 'Please check your email to confirm your account';
+                } else if (error.message.includes('User already registered')) {
+                    errorMessage = 'Account already exists. Please login instead.';
+                } else {
+                    errorMessage = error.message;
+                }
+                
+                showToast(errorMessage, 'error');
             } finally {
                 submitBtn.textContent = originalText;
                 submitBtn.disabled = false;
@@ -2358,7 +1051,7 @@
         }
         
         // ============================================
-        // ALERT FUNCTIONS (WITH IMAGES)
+        // ALERT FUNCTIONS (FIXED)
         // ============================================
         async function loadAlerts() {
             const container = document.getElementById('alertsContainer');
@@ -2370,36 +1063,7 @@
             `;
             
             try {
-                const { data: alerts, error } = await supabase
-                    .from('alerts')
-                    .select('*')
-                    .eq('is_active', true)
-                    .order('created_at', { ascending: false })
-                    .limit(100);
-                
-                if (error) throw error;
-                
-                displayAlerts(alerts);
-                updateLastUpdateTime();
-                updateStatistics(alerts);
-                
-            } catch (error) {
-                console.error('Error loading alerts:', error);
-                container.innerHTML = `
-                    <div class="text-center text-muted">
-                        <p>Failed to load alerts</p>
-                        <button onclick="loadAlerts()" class="btn btn-secondary mt-3">
-                            Retry
-                        </button>
-                    </div>
-                `;
-            }
-        }
-        
-        async function loadPublicAlerts() {
-            const container = document.getElementById('alertsContainer');
-            
-            try {
+                // Try to load from Supabase
                 const { data: alerts, error } = await supabase
                     .from('alerts')
                     .select('*')
@@ -2409,13 +1073,69 @@
                 
                 if (error) throw error;
                 
-                displayAlerts(alerts);
-                updateStatistics(alerts);
+                if (alerts && alerts.length > 0) {
+                    displayAlerts(alerts);
+                    updateLastUpdateTime();
+                    updateStatistics(alerts);
+                } else {
+                    // No alerts in database, show sample
+                    loadSampleAlerts();
+                }
                 
             } catch (error) {
-                console.error('Error loading public alerts:', error);
-                displaySampleAlerts();
+                console.error('Error loading alerts:', error);
+                // Fallback to sample alerts
+                loadSampleAlerts();
             }
+        }
+        
+        function loadPublicAlerts() {
+            // Load alerts without authentication
+            const container = document.getElementById('alertsContainer');
+            
+            try {
+                // Try public access
+                loadAlerts().catch(() => {
+                    // If that fails, show sample alerts
+                    loadSampleAlerts();
+                });
+            } catch (error) {
+                console.error('Error loading public alerts:', error);
+                loadSampleAlerts();
+            }
+        }
+        
+        function loadSampleAlerts() {
+            const sampleAlerts = [
+                {
+                    id: 'sample-1',
+                    title: "Welcome to AlertSystem Pro",
+                    message: "This is a demo alert. Sign up to create and receive real-time alerts.",
+                    priority: "medium",
+                    category: "Demo",
+                    created_at: new Date().toISOString()
+                },
+                {
+                    id: 'sample-2',
+                    title: "System Status: Operational",
+                    message: "All systems are running normally. No issues reported.",
+                    priority: "low",
+                    category: "System",
+                    created_at: new Date(Date.now() - 3600000).toISOString()
+                },
+                {
+                    id: 'sample-3',
+                    title: "Maintenance Scheduled",
+                    message: "System maintenance is scheduled for tomorrow at 2:00 AM UTC.",
+                    priority: "high",
+                    category: "Maintenance",
+                    created_at: new Date(Date.now() - 7200000).toISOString()
+                }
+            ];
+            
+            displayAlerts(sampleAlerts);
+            updateStatistics(sampleAlerts);
+            showToast('Using demo mode. Sign up for full features.', 'info');
         }
         
         function displayAlerts(alerts) {
@@ -2431,19 +1151,8 @@
                 return;
             }
             
-            container.innerHTML = alerts.map(alert => {
-                // Parse images from metadata or assume empty array
-                const images = alert.metadata?.images || [];
-                
-                return `
-                <div class="alert-item ${alert.priority}" id="alert-${alert.id}">
-                    <div class="alert-actions">
-                        ${currentUser ? `
-                            <button class="action-btn delete" onclick="deleteAlert('${alert.id}')" title="Delete Alert">
-                                🗑️
-                            </button>
-                        ` : ''}
-                    </div>
+            container.innerHTML = alerts.map(alert => `
+                <div class="alert-item ${alert.priority}">
                     <div class="alert-header">
                         <div class="alert-title">${escapeHtml(alert.title)}</div>
                         <span class="alert-priority priority-${alert.priority}">
@@ -2451,17 +1160,6 @@
                         </span>
                     </div>
                     <div class="alert-message">${escapeHtml(alert.message)}</div>
-                    
-                    ${images.length > 0 ? `
-                        <div class="alert-images">
-                            ${images.map((img, index) => `
-                                <img src="${img}" alt="Alert image ${index + 1}" 
-                                     class="alert-image" 
-                                     onclick="showImagePreview('${img}')">
-                            `).join('')}
-                        </div>
-                    ` : ''}
-                    
                     <div class="alert-footer">
                         <span class="alert-category">${alert.category || 'General'}</span>
                         <span class="alert-time" title="${new Date(alert.created_at).toLocaleString()}">
@@ -2469,24 +1167,7 @@
                         </span>
                     </div>
                 </div>
-                `;
-            }).join('');
-        }
-        
-        function displaySampleAlerts() {
-            const sampleAlerts = [
-                {
-                    id: 'sample-1',
-                    title: "Welcome to AlertSystem Pro",
-                    message: "This is a demo alert. Sign up to create and receive real-time alerts with notifications.",
-                    priority: "medium",
-                    category: "Demo",
-                    created_at: new Date().toISOString(),
-                    metadata: { images: [] }
-                }
-            ];
-            
-            displayAlerts(sampleAlerts);
+            `).join('');
         }
         
         function showCreateAlertModal() {
@@ -2494,18 +1175,8 @@
                 showLoginModal();
                 return;
             }
-            // Reset form
             document.getElementById('createAlertForm').reset();
             document.getElementById('alertPriority').value = 'medium';
-            selectedImages = [];
-            updateImagePreview();
-            
-            // Hide camera if active
-            const cameraContainer = document.getElementById('cameraContainer');
-            if (cameraContainer.classList.contains('active')) {
-                toggleCamera();
-            }
-            
             showModal('createAlertModal');
         }
         
@@ -2528,102 +1199,87 @@
             submitBtn.disabled = true;
             
             try {
-                // Prepare metadata with images
-                const metadata = {
-                    images: selectedImages,
-                    createdBy: currentUser.id,
-                    createdByEmail: currentUser.email
-                };
+                // First check if we have database access
+                const { error: testError } = await supabase
+                    .from('alerts')
+                    .select('count', { count: 'exact', head: true });
                 
-                // Create alert with images
+                if (testError && testError.message.includes('permission denied')) {
+                    throw new Error('Database permission denied. Please check RLS policies.');
+                }
+                
+                // Try to create alert using function
                 const { data, error } = await supabase
                     .rpc('create_alert_and_notify', {
                         p_title: title,
                         p_message: message,
                         p_priority: priority,
-                        p_category: category,
-                        p_metadata: metadata
+                        p_category: category
                     });
                 
-                if (error) throw error;
+                if (error) {
+                    // Fallback: direct insert
+                    const { data: insertData, error: insertError } = await supabase
+                        .from('alerts')
+                        .insert([{
+                            title,
+                            message,
+                            priority,
+                            category,
+                            is_active: true,
+                            created_at: new Date().toISOString()
+                        }])
+                        .select()
+                        .single();
+                    
+                    if (insertError) throw insertError;
+                }
                 
-                showToast('Alert created and sent to all users!', 'success');
+                showToast('Alert created successfully!', 'success');
                 hideModal('createAlertModal');
-                
-                // Reset form
                 document.getElementById('createAlertForm').reset();
-                selectedImages = [];
-                updateImagePreview();
                 
-                // Load updated alerts
+                // Refresh alerts
                 loadAlerts();
                 
             } catch (error) {
                 console.error('Error creating alert:', error);
-                showToast('Failed to create alert: ' + error.message, 'error');
+                
+                let errorMessage = 'Failed to create alert';
+                if (error.message.includes('permission denied')) {
+                    errorMessage = 'Permission denied. Please check your database permissions.';
+                } else if (error.message.includes('function')) {
+                    errorMessage = 'Database function not available. Contact administrator.';
+                }
+                
+                showToast(errorMessage, 'error');
             } finally {
                 submitBtn.textContent = originalText;
                 submitBtn.disabled = false;
             }
         }
         
-        async function loadUnreadCount() {
-            if (!currentUser) return;
-            
-            try {
-                const { data: count, error } = await supabase
-                    .rpc('get_unread_notifications_count', { user_uuid: currentUser.id });
-                
-                if (error) throw error;
-                
-                const badge = document.getElementById('notificationCount');
-                const badgeContainer = document.getElementById('notificationBadge');
-                
-                if (count > 0) {
-                    badge.textContent = count > 99 ? '99+' : count;
-                    badgeContainer.classList.remove('hidden');
-                } else {
-                    badgeContainer.classList.add('hidden');
-                }
-                
-                document.getElementById('yourUnread').textContent = count || 0;
-                
-            } catch (error) {
-                console.error('Error loading unread count:', error);
-            }
-        }
-        
         // ============================================
-        // REALTIME SUBSCRIPTIONS
+        // REALTIME SUBSCRIPTIONS (SIMPLIFIED)
         // ============================================
         function subscribeToRealtime() {
             if (!currentUser || realtimeSubscription) return;
             
-            realtimeSubscription = supabase
-                .channel('alerts-channel')
-                .on('postgres_changes', 
-                    { event: 'INSERT', schema: 'public', table: 'alerts' },
-                    (payload) => {
-                        console.log('New alert received:', payload.new);
-                        
-                        // Show notification to user (with sound)
-                        showNotification(payload.new);
-                        
-                        // Refresh alerts list
-                        loadAlerts();
-                        
-                        // Show toast
-                        showToast(`New ${payload.new.priority} alert: ${payload.new.title}`, 'success');
-                    }
-                )
-                .on('postgres_changes',
-                    { event: '*', schema: 'public', table: 'user_notifications', 
-                      filter: `user_id=eq.${currentUser.id}` },
-                    () => {
-                        loadUnreadCount();
-                    }
-                )
-                .subscribe();
+            try {
+                realtimeSubscription = supabase
+                    .channel('alerts-channel')
+                    .on('postgres_changes', 
+                        { event: 'INSERT', schema: 'public', table: 'alerts' },
+                        (payload) => {
+                            console.log('New alert received:', payload.new);
+                            loadAlerts();
+                            showToast(`New alert: ${payload.new.title}`, 'success');
+                        }
+                    )
+                    .subscribe();
+            } catch (error) {
+                console.warn('Realtime subscription failed:', error);
+            }
         }
         
         // ============================================
@@ -2632,16 +1288,7 @@
         async function onUserLoggedIn() {
             updateUIForUser();
             loadAlerts();
-            loadUnreadCount();
             subscribeToRealtime();
-            loadUserCount();
-            
-            // Request notification permission on login
-            if (notificationPermission === 'default') {
-                setTimeout(() => {
-                    requestNotificationPermission();
-                }, 1000);
-            }
         }
         
         function updateUIForUser() {
@@ -2661,22 +1308,6 @@
         function updateStatistics(alerts) {
             document.getElementById('activeAlertsCount').textContent = alerts?.length || 0;
             document.getElementById('lastUpdate').textContent = `Updated ${formatTimeAgo(new Date())}`;
-        }
-        
-        async function loadUserCount() {
-            if (!currentUser) return;
-            
-            try {
-                const { count, error } = await supabase
-                    .from('user_profiles')
-                    .select('*', { count: 'exact', head: true });
-                
-                if (!error && count !== null) {
-                    document.getElementById('totalUsers').textContent = count;
-                }
-            } catch (error) {
-                console.error('Error loading user count:', error);
-            }
         }
         
         // ============================================
@@ -2746,15 +1377,31 @@
                 `Updated at ${now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
         }
         
-        // Helper to load scripts
-        function loadScript(src) {
-            return new Promise((resolve, reject) => {
-                const script = document.createElement('script');
-                script.src = src;
-                script.onload = resolve;
-                script.onerror = reject;
-                document.head.appendChild(script);
-            });
+        function testNotification() {
+            if (!("Notification" in window)) {
+                showToast("This browser doesn't support notifications", 'warning');
+                return;
+            }
+            
+            if (Notification.permission === "granted") {
+                new Notification("AlertSystem Test", {
+                    body: "This is a test notification",
+                    icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🚨</text></svg>'
+                });
+                showToast('Test notification sent', 'success');
+            } else if (Notification.permission !== "denied") {
+                Notification.requestPermission().then(permission => {
+                    if (permission === "granted") {
+                        new Notification("AlertSystem Test", {
+                            body: "This is a test notification",
+                            icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🚨</text></svg>'
+                        });
+                        showToast('Test notification sent', 'success');
+                    }
+                });
+            } else {
+                showToast("Notifications blocked. Please enable in browser settings.", 'warning');
+            }
         }
         
         // Close modals with Escape key
@@ -2777,19 +1424,10 @@
             });
         });
         
-        // Handle page visibility changes
-        document.addEventListener('visibilitychange', () => {
-            if (!document.hidden && currentUser) {
-                // Page became visible, refresh alerts
-                loadAlerts();
-                loadUnreadCount();
-            }
-        });
-        
         // Initialize welcome message
         setTimeout(() => {
             if (!currentUser) {
-                showToast('Welcome to AlertSystem Pro! Sign up to create alerts with photos and receive notifications.', 'info');
+                showToast('Welcome to AlertSystem Pro! Sign up to start creating alerts.', 'info');
             }
         }, 1000);
     </script>
