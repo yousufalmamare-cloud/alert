@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>AlertSystem Pro - Real-time Alert Management</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚨</text></svg>">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#4f46e5">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
     <style>
         /* ===== RESET & BASE ===== */
@@ -188,6 +192,7 @@
             transition: transform 0.2s, box-shadow 0.2s;
             animation: slideIn 0.3s ease-out;
             position: relative;
+            cursor: pointer;
         }
         
         .alert-item:hover {
@@ -298,6 +303,7 @@
             color: var(--gray-600);
             opacity: 0;
             transition: all 0.2s;
+            z-index: 10;
         }
         
         .alert-item:hover .alert-delete {
@@ -308,6 +314,18 @@
             background: var(--danger);
             color: white;
             border-color: var(--danger);
+        }
+        
+        /* Alert Sound Indicator */
+        .sound-indicator {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            font-size: 12px;
+            color: var(--gray-400);
+            display: flex;
+            align-items: center;
+            gap: 4px;
         }
         
         /* ===== FORMS ===== */
@@ -572,6 +590,17 @@
             to { transform: rotate(360deg); }
         }
         
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
         /* ===== RESPONSIVE ===== */
         @media (max-width: 640px) {
             .header-content {
@@ -647,6 +676,14 @@
         .justify-between { justify-content: space-between; }
         .flex-wrap { flex-wrap: wrap; }
         .flex-1 { flex: 1; }
+        
+        .blink {
+            animation: pulse 1s infinite;
+        }
+        
+        .shake {
+            animation: shake 0.5s ease-in-out;
+        }
     </style>
 </head>
 <body>
@@ -671,6 +708,10 @@
                         <button onclick="showCreateAlertModal()" class="btn btn-primary btn-sm">New Alert</button>
                         <button onclick="logout()" class="btn btn-secondary btn-sm">Logout</button>
                     </div>
+                    
+                    <button onclick="toggleSound()" class="btn btn-icon" id="soundToggle" title="Toggle Sound">
+                        🔊
+                    </button>
                 </div>
             </div>
         </header>
@@ -720,8 +761,12 @@
                             <strong id="activeAlertsCount">0</strong>
                         </div>
                         <div class="flex justify-between">
-                            <span>Total Users:</span>
-                            <strong id="totalUsers">0</strong>
+                            <span>Critical Alerts:</span>
+                            <strong id="criticalAlertsCount">0</strong>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Your Alerts:</span>
+                            <strong id="userAlertsCount">0</strong>
                         </div>
                     </div>
                 </div>
@@ -738,6 +783,29 @@
                         <button onclick="testNotification()" class="btn btn-secondary btn-sm">
                             🔔 Test Notification
                         </button>
+                        <button onclick="requestPushPermission()" class="btn btn-secondary btn-sm">
+                            📱 Enable Push
+                        </button>
+                        <button onclick="playTestSound()" class="btn btn-secondary btn-sm">
+                            🔊 Test Sound
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Sound Settings -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">🔊 Sound Settings</h2>
+                    </div>
+                    <div class="flex flex-col gap-3">
+                        <div class="flex justify-between items-center">
+                            <span>Notification Volume:</span>
+                            <input type="range" id="volumeSlider" min="0" max="100" value="70" 
+                                   class="w-24" onchange="updateVolume(this.value)">
+                        </div>
+                        <div class="text-sm text-muted">
+                            Adjust notification sound volume
+                        </div>
                     </div>
                 </div>
             </div>
@@ -808,12 +876,15 @@
                     
                     <div class="form-group">
                         <label for="alertPriority" class="form-label">Priority</label>
-                        <select id="alertPriority" class="form-select" required>
-                            <option value="low">Low</option>
-                            <option value="medium" selected>Medium</option>
-                            <option value="high">High</option>
-                            <option value="critical">Critical</option>
+                        <select id="alertPriority" class="form-select" required onchange="updateSoundPreview()">
+                            <option value="low">Low (Soft Sound)</option>
+                            <option value="medium" selected>Medium (Normal Sound)</option>
+                            <option value="high">High (Loud Sound)</option>
+                            <option value="critical">Critical (Emergency Sound)</option>
                         </select>
+                        <div class="text-sm text-muted mt-1" id="soundPreview">
+                            🔊 Medium volume sound will play
+                        </div>
                     </div>
                     
                     <div class="form-group">
@@ -829,6 +900,9 @@
                         <button type="button" onclick="hideModal('createAlertModal')" 
                                 class="btn btn-secondary flex-1">
                             Cancel
+                        </button>
+                        <button type="button" onclick="playPrioritySound()" class="btn btn-secondary">
+                            🔊 Test
                         </button>
                     </div>
                 </form>
@@ -853,12 +927,22 @@
         let supabase = null;
         let currentUser = null;
         let realtimeSubscription = null;
+        let serviceWorkerRegistration = null;
+        let soundEnabled = true;
+        let notificationVolume = 0.7;
+        let lastAlertSound = null;
         
         // ============================================
         // INITIALIZATION
         // ============================================
         document.addEventListener('DOMContentLoaded', async () => {
             console.log('🚀 AlertSystem Pro Initializing...');
+            
+            // Load sound settings from localStorage
+            soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
+            notificationVolume = parseFloat(localStorage.getItem('notificationVolume') || '0.7');
+            document.getElementById('volumeSlider').value = notificationVolume * 100;
+            updateSoundToggleButton();
             
             // Initialize Supabase
             await initSupabase();
@@ -899,7 +983,13 @@
                 }
                 
                 // Load alerts for everyone
-                loadAlerts();
+                await loadAlerts();
+                
+                // Initialize Service Worker for push notifications
+                await initServiceWorker();
+                
+                // Subscribe to real-time alerts
+                subscribeToRealtimeAlerts();
                 
                 // Listen for auth changes
                 supabase.auth.onAuthStateChange((event, session) => {
@@ -969,6 +1059,77 @@
         }
         
         // ============================================
+        // SERVICE WORKER & PUSH NOTIFICATIONS
+        // ============================================
+        async function initServiceWorker() {
+            if ('serviceWorker' in navigator) {
+                try {
+                    // Register Service Worker
+                    serviceWorkerRegistration = await navigator.serviceWorker.register('sw.js', {
+                        scope: './'
+                    });
+                    
+                    console.log('Service Worker registered:', serviceWorkerRegistration);
+                    
+                    // Listen for service worker messages
+                    navigator.serviceWorker.addEventListener('message', (event) => {
+                        console.log('Message from Service Worker:', event.data);
+                        if (event.data.type === 'NEW_ALERT') {
+                            handleIncomingAlert(event.data.alert);
+                        }
+                    });
+                    
+                    // Check for background sync support
+                    if ('backgroundSync' in window) {
+                        try {
+                            await serviceWorkerRegistration.sync.register('check-alerts');
+                            console.log('Background sync registered');
+                        } catch (error) {
+                            console.warn('Background sync not supported:', error);
+                        }
+                    }
+                    
+                } catch (error) {
+                    console.error('Service Worker registration failed:', error);
+                    showToast('Push notifications disabled', 'warning');
+                }
+            }
+        }
+        
+        async function requestPushPermission() {
+            if (!('Notification' in window)) {
+                showToast('This browser does not support notifications', 'warning');
+                return;
+            }
+            
+            if (Notification.permission === 'granted') {
+                showToast('Notifications already enabled', 'success');
+                return;
+            }
+            
+            try {
+                const permission = await Notification.requestPermission();
+                if (permission === 'granted') {
+                    showToast('Notifications enabled! You will receive alerts even when app is closed.', 'success');
+                    
+                    // Show test notification
+                    if (serviceWorkerRegistration) {
+                        serviceWorkerRegistration.showNotification('AlertSystem Pro', {
+                            body: 'Push notifications are now enabled! You will receive alerts even when the app is closed.',
+                            icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🚨</text></svg>',
+                            tag: 'test-notification',
+                            vibrate: [200, 100, 200]
+                        });
+                    }
+                } else {
+                    showToast('Notifications blocked. You won\'t receive alerts when app is closed.', 'warning');
+                }
+            } catch (error) {
+                console.error('Error requesting notification permission:', error);
+            }
+        }
+        
+        // ============================================
         // AUTHENTICATION FUNCTIONS
         // ============================================
         function showLoginModal() {
@@ -1001,7 +1162,13 @@
                 if (isSignup) {
                     const { data, error } = await supabase.auth.signUp({
                         email,
-                        password
+                        password,
+                        options: {
+                            data: {
+                                name: document.getElementById('authName')?.value || '',
+                                created_at: new Date().toISOString()
+                            }
+                        }
                     });
                     
                     if (error) throw error;
@@ -1041,7 +1208,7 @@
         }
         
         // ============================================
-        // ALERT FUNCTIONS (FIXED CREATE ALERT)
+        // ALERT FUNCTIONS
         // ============================================
         async function loadAlerts() {
             const container = document.getElementById('alertsContainer');
@@ -1065,8 +1232,8 @@
                     console.error('Supabase error:', error);
                     // Check if table exists
                     if (error.message.includes('does not exist')) {
-                        showToast('Database table not found. Creating sample alerts.', 'warning');
-                        createSampleAlerts();
+                        showToast('Database table not found. Using demo mode.', 'warning');
+                        loadSampleAlerts();
                     } else {
                         throw error;
                     }
@@ -1085,26 +1252,6 @@
             }
         }
         
-        async function createSampleAlerts() {
-            // Create sample alerts in localStorage for demo
-            const sampleAlerts = [
-                {
-                    id: 'sample-1',
-                    title: "Welcome to AlertSystem Pro",
-                    message: "This is a demo alert. Sign up to create and receive real-time alerts.",
-                    priority: "medium",
-                    category: "Demo",
-                    created_at: new Date().toISOString(),
-                    created_by: 'system'
-                }
-            ];
-            
-            // Store in localStorage
-            localStorage.setItem('alerts', JSON.stringify(sampleAlerts));
-            displayAlerts(sampleAlerts);
-            updateStatistics(sampleAlerts);
-        }
-        
         function loadSampleAlerts() {
             // Load from localStorage or create default
             let alerts = JSON.parse(localStorage.getItem('alerts') || '[]');
@@ -1119,6 +1266,24 @@
                         category: "Demo",
                         created_at: new Date().toISOString(),
                         created_by: 'system'
+                    },
+                    {
+                        id: 'sample-2',
+                        title: "System Maintenance",
+                        message: "Scheduled maintenance this weekend. System will be offline for 2 hours.",
+                        priority: "high",
+                        category: "Maintenance",
+                        created_at: new Date(Date.now() - 3600000).toISOString(),
+                        created_by: 'admin'
+                    },
+                    {
+                        id: 'sample-3',
+                        title: "Security Alert",
+                        message: "Unauthorized access detected. Please change your passwords immediately.",
+                        priority: "critical",
+                        category: "Security",
+                        created_at: new Date(Date.now() - 1800000).toISOString(),
+                        created_by: 'admin'
                     }
                 ];
                 localStorage.setItem('alerts', JSON.stringify(alerts));
@@ -1142,9 +1307,10 @@
             }
             
             container.innerHTML = alerts.map(alert => `
-                <div class="alert-item ${alert.priority}" data-id="${alert.id}">
-                    ${currentUser ? `
-                        <button class="alert-delete" onclick="deleteAlert('${alert.id}')" title="Delete Alert">
+                <div class="alert-item ${alert.priority}" data-id="${alert.id}" 
+                     onclick="viewAlertDetails('${alert.id}')">
+                    ${currentUser && (alert.created_by === currentUser.id || alert.created_by === currentUser.email || alert.created_by === 'system') ? `
+                        <button class="alert-delete" onclick="event.stopPropagation(); deleteAlert('${alert.id}')" title="Delete Alert">
                             🗑️
                         </button>
                     ` : ''}
@@ -1161,8 +1327,40 @@
                             ${formatTimeAgo(new Date(alert.created_at))}
                         </span>
                     </div>
+                    <div class="sound-indicator">
+                        ${getSoundIndicator(alert.priority)}
+                    </div>
                 </div>
             `).join('');
+        }
+        
+        function getSoundIndicator(priority) {
+            switch(priority) {
+                case 'critical': return '🔊🔊🔊 Emergency Volume';
+                case 'high': return '🔊🔊 High Volume';
+                case 'medium': return '🔊 Medium Volume';
+                case 'low': return '🔈 Low Volume';
+                default: return '🔊';
+            }
+        }
+        
+        function viewAlertDetails(alertId) {
+            // Find and highlight the alert
+            const alertElement = document.querySelector(`[data-id="${alertId}"]`);
+            if (alertElement) {
+                alertElement.classList.add('shake');
+                setTimeout(() => alertElement.classList.remove('shake'), 500);
+                
+                // Scroll to alert
+                alertElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                
+                // Visual feedback
+                const originalBg = alertElement.style.backgroundColor;
+                alertElement.style.backgroundColor = '#e8f4fd';
+                setTimeout(() => {
+                    alertElement.style.backgroundColor = originalBg;
+                }, 1000);
+            }
         }
         
         async function deleteAlert(alertId) {
@@ -1190,7 +1388,7 @@
                 }
                 
                 showToast('Alert deleted successfully', 'success');
-                loadAlerts();
+                await loadAlerts();
                 
             } catch (error) {
                 console.error('Error deleting alert:', error);
@@ -1199,7 +1397,7 @@
         }
         
         // ============================================
-        // CREATE ALERT FUNCTION (FIXED)
+        // CREATE ALERT FUNCTION (WITH REAL-TIME)
         // ============================================
         function showCreateAlertModal() {
             if (!currentUser) {
@@ -1207,6 +1405,24 @@
                 return;
             }
             showModal('createAlertModal');
+            updateSoundPreview();
+        }
+        
+        function updateSoundPreview() {
+            const priority = document.getElementById('alertPriority').value;
+            const preview = document.getElementById('soundPreview');
+            const texts = {
+                'critical': '🔊🔊🔊 EMERGENCY VOLUME - Loud siren will play repeatedly',
+                'high': '🔊🔊 HIGH VOLUME - Warning sound will play',
+                'medium': '🔊 MEDIUM VOLUME - Alert sound will play',
+                'low': '🔈 LOW VOLUME - Gentle notification will play'
+            };
+            preview.textContent = texts[priority] || '🔊 Sound will play';
+        }
+        
+        function playPrioritySound() {
+            const priority = document.getElementById('alertPriority').value;
+            playNotificationSound(priority, true);
         }
         
         async function createAlert(event) {
@@ -1220,7 +1436,12 @@
             const title = document.getElementById('alertTitle').value.trim();
             const message = document.getElementById('alertMessage').value.trim();
             const priority = document.getElementById('alertPriority').value;
-            const category = document.getElementById('alertCategory').value.trim() || null;
+            const category = document.getElementById('alertCategory').value.trim() || 'General';
+            
+            if (!title || !message) {
+                showToast('Please fill in all required fields', 'error');
+                return;
+            }
             
             const submitBtn = event.target.querySelector('button[type="submit"]');
             const originalText = submitBtn.textContent;
@@ -1228,7 +1449,8 @@
             submitBtn.disabled = true;
             
             try {
-                // Create alert data
+                // Create alert data - use email if user.id is not available
+                const userIdentifier = currentUser.id || currentUser.email || 'anonymous';
                 const alertData = {
                     title,
                     message,
@@ -1236,12 +1458,11 @@
                     category,
                     is_active: true,
                     created_at: new Date().toISOString(),
-                    created_by: currentUser.id
+                    created_by: userIdentifier
                 };
                 
                 // Try to save to Supabase
                 let savedAlert = null;
-                let supabaseError = null;
                 
                 try {
                     const { data, error } = await supabase
@@ -1251,11 +1472,12 @@
                         .single();
                     
                     if (error) {
-                        supabaseError = error;
+                        console.error('Supabase error:', error);
                         throw error;
                     }
                     
                     savedAlert = data;
+                    console.log('Alert saved to Supabase:', savedAlert);
                     
                 } catch (supabaseError) {
                     console.warn('Supabase insert failed, using localStorage fallback:', supabaseError);
@@ -1266,20 +1488,37 @@
                     
                     // Save to localStorage
                     let alerts = JSON.parse(localStorage.getItem('alerts') || '[]');
-                    alerts.unshift(savedAlert); // Add to beginning
+                    alerts.unshift(savedAlert);
                     localStorage.setItem('alerts', JSON.stringify(alerts));
+                    
+                    // Broadcast to other tabs
+                    broadcastNewAlert(savedAlert);
                 }
                 
-                showToast('Alert created successfully!', 'success');
+                // Show success message
+                showToast('Alert created successfully! Broadcasting to all users...', 'success');
                 hideModal('createAlertModal');
                 document.getElementById('createAlertForm').reset();
                 
+                // Play sound for creator
+                if (soundEnabled) {
+                    playNotificationSound(priority, false);
+                }
+                
                 // Reload alerts
-                loadAlerts();
+                await loadAlerts();
                 
                 // Show notification
                 if (savedAlert) {
                     showNotification(savedAlert);
+                    
+                    // Broadcast to service worker for push notifications
+                    if (serviceWorkerRegistration) {
+                        navigator.serviceWorker.controller?.postMessage({
+                            type: 'BROADCAST_ALERT',
+                            alert: savedAlert
+                        });
+                    }
                 }
                 
             } catch (error) {
@@ -1291,69 +1530,263 @@
             }
         }
         
+        function broadcastNewAlert(alert) {
+            // Send to all tabs using BroadcastChannel
+            if (typeof BroadcastChannel !== 'undefined') {
+                try {
+                    const channel = new BroadcastChannel('alert_channel');
+                    channel.postMessage({
+                        type: 'NEW_ALERT',
+                        alert: alert
+                    });
+                    channel.close();
+                } catch (error) {
+                    console.warn('BroadcastChannel not supported:', error);
+                }
+            }
+            
+            // Send to service worker
+            if (navigator.serviceWorker && serviceWorkerRegistration) {
+                navigator.serviceWorker.controller?.postMessage({
+                    type: 'NEW_ALERT',
+                    alert: alert
+                });
+            }
+        }
+        
         // ============================================
-        // NOTIFICATION FUNCTIONS
+        // REAL-TIME SUBSCRIPTION
+        // ============================================
+        function subscribeToRealtimeAlerts() {
+            if (!supabase) return;
+            
+            // Clean up existing subscription
+            if (realtimeSubscription) {
+                supabase.removeChannel(realtimeSubscription);
+            }
+            
+            // Subscribe to new alerts
+            realtimeSubscription = supabase
+                .channel('alerts-channel')
+                .on('postgres_changes', {
+                    event: 'INSERT',
+                    schema: 'public',
+                    table: 'alerts'
+                }, (payload) => {
+                    console.log('New alert via real-time:', payload.new);
+                    handleIncomingAlert(payload.new);
+                })
+                .on('postgres_changes', {
+                    event: 'UPDATE',
+                    schema: 'public',
+                    table: 'alerts'
+                }, (payload) => {
+                    console.log('Alert updated:', payload.new);
+                    loadAlerts();
+                })
+                .on('postgres_changes', {
+                    event: 'DELETE',
+                    schema: 'public',
+                    table: 'alerts'
+                }, () => {
+                    console.log('Alert deleted');
+                    loadAlerts();
+                })
+                .subscribe();
+            
+            return realtimeSubscription;
+        }
+        
+        function handleIncomingAlert(alert) {
+            // Check if this is a new alert (not created by current user)
+            const userIdentifier = currentUser ? (currentUser.id || currentUser.email) : null;
+            const isMyAlert = alert.created_by === userIdentifier;
+            
+            if (!isMyAlert) {
+                // Show notification with sound
+                showNotification(alert);
+                
+                if (soundEnabled) {
+                    playNotificationSound(alert.priority, false);
+                }
+                
+                // Visual feedback
+                showToast(`New ${alert.priority} alert: ${alert.title}`, 'warning');
+            }
+            
+            // Update UI
+            loadAlerts();
+        }
+        
+        // Listen for broadcast messages
+        if (typeof BroadcastChannel !== 'undefined') {
+            try {
+                const channel = new BroadcastChannel('alert_channel');
+                channel.onmessage = (event) => {
+                    if (event.data.type === 'NEW_ALERT') {
+                        handleIncomingAlert(event.data.alert);
+                    }
+                };
+            } catch (error) {
+                console.warn('BroadcastChannel not supported:', error);
+            }
+        }
+        
+        // ============================================
+        // NOTIFICATION & SOUND FUNCTIONS
         // ============================================
         function showNotification(alert) {
-            // Play sound based on priority
-            playNotificationSound(alert.priority);
-            
             // Show browser notification
             if ("Notification" in window && Notification.permission === "granted") {
                 const options = {
-                    body: alert.message.substring(0, 100),
+                    body: alert.message.substring(0, 120),
                     icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🚨</text></svg>',
+                    badge: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🚨</text></svg>',
                     tag: `alert-${alert.id}`,
-                    requireInteraction: alert.priority === 'critical'
+                    timestamp: Date.now(),
+                    vibrate: alert.priority === 'critical' ? [200, 100, 200, 100, 200, 100, 200] :
+                             alert.priority === 'high' ? [200, 100, 200] :
+                             alert.priority === 'medium' ? [200, 100] : [200],
+                    requireInteraction: alert.priority === 'critical',
+                    data: alert
                 };
+                
+                // Add actions for critical alerts
+                if (alert.priority === 'critical') {
+                    options.actions = [
+                        {
+                            action: 'view',
+                            title: 'View Details'
+                        },
+                        {
+                            action: 'dismiss',
+                            title: 'Dismiss'
+                        }
+                    ];
+                }
                 
                 const notification = new Notification(`🚨 ${alert.title}`, options);
                 
                 notification.onclick = () => {
                     window.focus();
                     notification.close();
+                    viewAlertDetails(alert.id);
                 };
             }
         }
         
-        function playNotificationSound(priority) {
-            // Create audio elements if they don't exist
-            let soundElement = document.getElementById(`sound-${priority}`);
-            if (!soundElement) {
-                soundElement = document.createElement('audio');
-                soundElement.id = `sound-${priority}`;
-                
-                // Use different sounds based on priority
-                let soundUrl = '';
-                switch(priority) {
-                    case 'critical':
-                        soundUrl = 'https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3';
-                        break;
-                    case 'high':
-                        soundUrl = 'https://assets.mixkit.co/sfx/preview/mixkit-warning-alarm-buzzer-985.mp3';
-                        break;
-                    case 'medium':
-                        soundUrl = 'https://assets.mixkit.co/sfx/preview/mixkit-retro-game-emergency-alarm-1000.mp3';
-                        break;
-                    case 'low':
-                        soundUrl = 'https://assets.mixkit.co/sfx/preview/mixkit-correct-answer-tone-2870.mp3';
-                        break;
-                }
-                
-                const source = document.createElement('source');
-                source.src = soundUrl;
-                source.type = 'audio/mpeg';
-                soundElement.appendChild(source);
-                document.body.appendChild(soundElement);
+        function playNotificationSound(priority, isPreview = false) {
+            if (!soundEnabled && !isPreview) return;
+            
+            const volumes = {
+                'critical': notificationVolume * 1.0,
+                'high': notificationVolume * 0.7,
+                'medium': notificationVolume * 0.5,
+                'low': notificationVolume * 0.3
+            };
+            
+            // Stop any existing sound
+            if (lastAlertSound) {
+                lastAlertSound.pause();
+                lastAlertSound.currentTime = 0;
             }
             
-            // Play sound
-            soundElement.currentTime = 0;
-            soundElement.volume = priority === 'critical' ? 1.0 : 
-                                 priority === 'high' ? 0.8 : 
-                                 priority === 'medium' ? 0.5 : 0.3;
+            // Create new audio element
+            const audio = new Audio();
             
-            soundElement.play().catch(e => console.warn('Sound play failed:', e));
+            // Different sounds based on priority
+            switch(priority) {
+                case 'critical':
+                    // Emergency siren sound (shorter for preview)
+                    if (isPreview) {
+                        audio.src = 'https://assets.mixkit.co/sfx/preview/mixkit-warning-alarm-buzzer-985.mp3';
+                    } else {
+                        audio.src = 'https://assets.mixkit.co/sfx/preview/mixkit-emergency-alert-siren-loop-1007.mp3';
+                        audio.loop = true;
+                        setTimeout(() => {
+                            if (!audio.paused) audio.pause();
+                        }, 5000);
+                    }
+                    break;
+                case 'high':
+                    // Warning buzzer
+                    audio.src = 'https://assets.mixkit.co/sfx/preview/mixkit-warning-alarm-buzzer-985.mp3';
+                    break;
+                case 'medium':
+                    // Alert sound
+                    audio.src = 'https://assets.mixkit.co/sfx/preview/mixkit-retro-game-emergency-alarm-1000.mp3';
+                    break;
+                case 'low':
+                    // Gentle notification
+                    audio.src = 'https://assets.mixkit.co/sfx/preview/mixkit-correct-answer-tone-2870.mp3';
+                    break;
+                default:
+                    audio.src = 'https://assets.mixkit.co/sfx/preview/mixkit-retro-game-emergency-alarm-1000.mp3';
+            }
+            
+            audio.volume = volumes[priority] || notificationVolume * 0.5;
+            
+            audio.play().catch(e => {
+                console.warn('Audio play failed:', e);
+                // Fallback to Web Audio API
+                playWebAudioNotification(priority, volumes[priority] || notificationVolume * 0.5);
+            });
+            
+            lastAlertSound = audio;
+        }
+        
+        function playWebAudioNotification(priority, volume) {
+            if (!window.AudioContext && !window.webkitAudioContext) return;
+            
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                // Configure based on priority
+                const configs = {
+                    'critical': {
+                        type: 'sawtooth',
+                        frequency: 800,
+                        duration: 1.5,
+                        pattern: 'emergency'
+                    },
+                    'high': {
+                        type: 'square',
+                        frequency: 600,
+                        duration: 1.0,
+                        pattern: 'warning'
+                    },
+                    'medium': {
+                        type: 'sine',
+                        frequency: 400,
+                        duration: 0.6,
+                        pattern: 'alert'
+                    },
+                    'low': {
+                        type: 'sine',
+                        frequency: 300,
+                        duration: 0.3,
+                        pattern: 'notification'
+                    }
+                };
+                
+                const config = configs[priority] || configs.medium;
+                
+                oscillator.type = config.type;
+                oscillator.frequency.setValueAtTime(config.frequency, audioContext.currentTime);
+                gainNode.gain.setValueAtTime(volume, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + config.duration);
+                
+                oscillator.start();
+                oscillator.stop(audioContext.currentTime + config.duration);
+                
+            } catch (error) {
+                console.warn('Web Audio API error:', error);
+            }
         }
         
         function testNotification() {
@@ -1363,23 +1796,95 @@
             }
             
             if (Notification.permission === "granted") {
-                new Notification("AlertSystem Test", {
-                    body: "This is a test notification",
-                    icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🚨</text></svg>'
-                });
+                const testAlert = {
+                    id: 'test-' + Date.now(),
+                    title: "Test Notification",
+                    message: "This is a test notification to verify the alert system is working properly.",
+                    priority: "medium",
+                    category: "Test",
+                    created_at: new Date().toISOString()
+                };
+                
+                showNotification(testAlert);
+                if (soundEnabled) {
+                    playNotificationSound('medium', true);
+                }
                 showToast('Test notification sent', 'success');
             } else if (Notification.permission !== "denied") {
                 Notification.requestPermission().then(permission => {
                     if (permission === "granted") {
-                        new Notification("AlertSystem Test", {
-                            body: "This is a test notification",
-                            icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🚨</text></svg>'
-                        });
+                        const testAlert = {
+                            id: 'test-' + Date.now(),
+                            title: "Test Notification",
+                            message: "Notifications enabled successfully!",
+                            priority: "medium",
+                            category: "Test",
+                            created_at: new Date().toISOString()
+                        };
+                        
+                        showNotification(testAlert);
+                        if (soundEnabled) {
+                            playNotificationSound('medium', true);
+                        }
                         showToast('Test notification sent', 'success');
+                    } else {
+                        showToast("Notifications blocked", 'warning');
                     }
                 });
             } else {
                 showToast("Notifications blocked. Please enable in browser settings.", 'warning');
+            }
+        }
+        
+        function playTestSound() {
+            if (!soundEnabled) {
+                showToast('Sound is disabled. Enable it first.', 'warning');
+                return;
+            }
+            
+            playNotificationSound('critical', true);
+            setTimeout(() => {
+                playNotificationSound('high', true);
+            }, 1000);
+            setTimeout(() => {
+                playNotificationSound('medium', true);
+            }, 2000);
+            setTimeout(() => {
+                playNotificationSound('low', true);
+            }, 3000);
+            
+            showToast('Playing test sounds for all priority levels', 'info');
+        }
+        
+        // ============================================
+        // SOUND SETTINGS FUNCTIONS
+        // ============================================
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            localStorage.setItem('soundEnabled', soundEnabled);
+            updateSoundToggleButton();
+            
+            if (soundEnabled) {
+                showToast('Sound enabled', 'success');
+                playNotificationSound('medium', true);
+            } else {
+                showToast('Sound disabled', 'info');
+            }
+        }
+        
+        function updateSoundToggleButton() {
+            const button = document.getElementById('soundToggle');
+            button.innerHTML = soundEnabled ? '🔊' : '🔇';
+            button.title = soundEnabled ? 'Disable Sound' : 'Enable Sound';
+        }
+        
+        function updateVolume(value) {
+            notificationVolume = value / 100;
+            localStorage.setItem('notificationVolume', notificationVolume);
+            
+            // Test sound at new volume
+            if (soundEnabled) {
+                playNotificationSound('medium', true);
             }
         }
         
@@ -1388,7 +1893,14 @@
         // ============================================
         async function onUserLoggedIn() {
             updateUIForUser();
-            loadAlerts();
+            await loadAlerts();
+            
+            // Request notification permission
+            if (Notification.permission === 'default') {
+                setTimeout(() => {
+                    Notification.requestPermission();
+                }, 1000);
+            }
         }
         
         function updateUIForUser() {
@@ -1405,7 +1917,19 @@
         }
         
         function updateStatistics(alerts) {
-            document.getElementById('activeAlertsCount').textContent = alerts?.length || 0;
+            if (!alerts) return;
+            
+            document.getElementById('activeAlertsCount').textContent = alerts.length;
+            
+            const criticalAlerts = alerts.filter(a => a.priority === 'critical').length;
+            document.getElementById('criticalAlertsCount').textContent = criticalAlerts;
+            
+            if (currentUser) {
+                const userIdentifier = currentUser.id || currentUser.email;
+                const userAlerts = alerts.filter(a => a.created_by === userIdentifier).length;
+                document.getElementById('userAlertsCount').textContent = userAlerts;
+            }
+            
             document.getElementById('lastUpdate').textContent = `Updated ${formatTimeAgo(new Date())}`;
         }
         
@@ -1434,20 +1958,26 @@
             toast.innerHTML = `
                 <span>${message}</span>
                 <button onclick="document.getElementById('${toastId}').remove()" 
-                        style="background:none;border:none;color:inherit;cursor:pointer;padding:0;">
+                        style="background:none;border:none;color:inherit;cursor:pointer;padding:0;font-size:1.2rem;">
                     ×
                 </button>
             `;
             
             toastContainer.appendChild(toast);
             
+            // Auto remove after 5 seconds
             setTimeout(() => {
                 const element = document.getElementById(toastId);
-                if (element) element.remove();
+                if (element) {
+                    element.style.opacity = '0';
+                    element.style.transform = 'translateX(20px)';
+                    setTimeout(() => element.remove(), 300);
+                }
             }, 5000);
         }
         
         function escapeHtml(text) {
+            if (!text) return '';
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
@@ -1456,7 +1986,8 @@
         function formatTimeAgo(date) {
             const seconds = Math.floor((new Date() - date) / 1000);
             
-            if (seconds < 60) return 'just now';
+            if (seconds < 5) return 'just now';
+            if (seconds < 60) return `${seconds}s ago`;
             
             const minutes = Math.floor(seconds / 60);
             if (minutes < 60) return `${minutes}m ago`;
@@ -1470,12 +2001,29 @@
             return date.toLocaleDateString();
         }
         
-        // Request notification permission
-        if (Notification.permission === 'default') {
-            setTimeout(() => {
-                Notification.requestPermission();
-            }, 2000);
-        }
+        // Auto-refresh every 30 seconds
+        setInterval(() => {
+            if (document.visibilityState === 'visible') {
+                loadAlerts();
+            }
+        }, 30000);
+        
+        // Refresh when tab becomes visible
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                loadAlerts();
+            }
+        });
+        
+        // Handle offline/online status
+        window.addEventListener('online', () => {
+            showToast('Back online. Syncing alerts...', 'success');
+            loadAlerts();
+        });
+        
+        window.addEventListener('offline', () => {
+            showToast('You are offline. Alerts may be delayed.', 'warning');
+        });
     </script>
 </body>
 </html>
