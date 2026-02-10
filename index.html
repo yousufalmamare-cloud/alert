@@ -12,6 +12,20 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="AlertSystem">
     
+    <!-- Audio elements for notification sounds -->
+    <audio id="soundCritical" preload="auto">
+        <source src="https://assets.mixkit.co/active_storage/sfx/201/201-preview.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="soundHigh" preload="auto">
+        <source src="https://assets.mixkit.co/active_storage/sfx/257/257-preview.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="soundMedium" preload="auto">
+        <source src="https://assets.mixkit.co/active_storage/sfx/250/250-preview.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="soundLow" preload="auto">
+        <source src="https://assets.mixkit.co/active_storage/sfx/245/245-preview.mp3" type="audio/mpeg">
+    </audio>
+    
     <style>
         /* ===== RESET & BASE ===== */
         * {
@@ -484,6 +498,84 @@
             color: var(--gray-900);
         }
         
+        /* ===== POPUP NOTIFICATION ===== */
+        .popup-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-lg);
+            border-left: 6px solid var(--primary);
+            z-index: 9999;
+            min-width: 350px;
+            max-width: 400px;
+            animation: slideInRight 0.3s ease-out;
+            display: none;
+        }
+        
+        .popup-notification.active {
+            display: block;
+        }
+        
+        .popup-notification.critical {
+            border-left-color: var(--danger);
+            background: linear-gradient(135deg, #fff5f5 0%, #fee 100%);
+        }
+        
+        .popup-notification.high {
+            border-left-color: var(--warning);
+            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+        }
+        
+        .popup-notification.medium {
+            border-left-color: var(--info);
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+        }
+        
+        .popup-notification.low {
+            border-left-color: var(--success);
+            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+        }
+        
+        .popup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+        
+        .popup-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--gray-800);
+        }
+        
+        .popup-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--gray-500);
+            cursor: pointer;
+            padding: 0.25rem;
+            line-height: 1;
+        }
+        
+        .popup-message {
+            color: var(--gray-600);
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+        
+        .popup-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.875rem;
+            color: var(--gray-500);
+        }
+        
         /* ===== LOADING ===== */
         .loading {
             display: flex;
@@ -573,6 +665,17 @@
             50% { opacity: 0.5; }
         }
         
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 5px rgba(239, 68, 68, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.8); }
+        }
+        
         /* ===== RESPONSIVE ===== */
         @media (max-width: 640px) {
             .header-content {
@@ -611,6 +714,13 @@
                 min-width: auto;
                 width: calc(100vw - 2rem);
             }
+            
+            .popup-notification {
+                left: 10px;
+                right: 10px;
+                min-width: auto;
+                max-width: none;
+            }
         }
         
         /* ===== UTILITY CLASSES ===== */
@@ -648,6 +758,71 @@
         .justify-between { justify-content: space-between; }
         .flex-wrap { flex-wrap: wrap; }
         .flex-1 { flex: 1; }
+        
+        /* ===== NOTIFICATION SETTINGS ===== */
+        .notification-settings {
+            background: white;
+            border-radius: var(--radius);
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--gray-100);
+        }
+        
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+        
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+        
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--gray-300);
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: var(--primary);
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
     </style>
 </head>
 <body>
@@ -675,6 +850,7 @@
                     <div id="userSection" class="hidden">
                         <span id="userEmail" class="text-muted"></span>
                         <button onclick="showCreateAlertModal()" class="btn btn-primary btn-sm">New Alert</button>
+                        <button onclick="showSettingsModal()" class="btn btn-secondary btn-sm">Settings</button>
                         <button onclick="logout()" class="btn btn-secondary btn-sm">Logout</button>
                     </div>
                 </div>
@@ -734,6 +910,10 @@
                             <span>Your Unread:</span>
                             <strong id="yourUnread">0</strong>
                         </div>
+                        <div class="flex justify-between">
+                            <span>Notifications:</span>
+                            <strong id="notificationStatus">Off</strong>
+                        </div>
                     </div>
                 </div>
 
@@ -746,8 +926,8 @@
                         <button onclick="loadAlerts()" class="btn btn-secondary btn-sm">
                             🔄 Refresh Alerts
                         </button>
-                        <button onclick="requestNotificationPermission()" class="btn btn-secondary btn-sm">
-                            🔔 Enable Notifications
+                        <button onclick="testNotification()" class="btn btn-secondary btn-sm">
+                            🔔 Test Notification
                         </button>
                         <button onclick="showInstallPrompt()" class="btn btn-secondary btn-sm" id="installBtn">
                             📱 Install App
@@ -823,10 +1003,10 @@
                     <div class="form-group">
                         <label for="alertPriority" class="form-label">Priority</label>
                         <select id="alertPriority" class="form-select" required>
-                            <option value="low">Low</option>
-                            <option value="medium" selected>Medium</option>
-                            <option value="high">High</option>
-                            <option value="critical">Critical</option>
+                            <option value="low">Low - Gentle notification</option>
+                            <option value="medium" selected>Medium - Standard notification</option>
+                            <option value="high">High - Urgent notification with sound</option>
+                            <option value="critical">Critical - Emergency alert with loud sound</option>
                         </select>
                     </div>
                     
@@ -850,14 +1030,113 @@
         </div>
     </div>
 
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">⚙️ Notification Settings</h3>
+                <button onclick="hideModal('settingsModal')" class="modal-close">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="notification-settings">
+                    <div class="setting-item">
+                        <div>
+                            <strong>Browser Notifications</strong>
+                            <div class="text-sm text-muted">Show notifications when app is closed</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="browserNotifications" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div>
+                            <strong>Popup Notifications</strong>
+                            <div class="text-sm text-muted">Show popup when app is open</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="popupNotifications" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div>
+                            <strong>Notification Sounds</strong>
+                            <div class="text-sm text-muted">Play sounds for alerts</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="notificationSounds" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div>
+                            <strong>Vibration</strong>
+                            <div class="text-sm text-muted">Vibrate device for alerts</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="vibrationEnabled">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <h4 class="mb-3">Sound Volume by Priority</h4>
+                    <div class="form-group">
+                        <label for="volumeCritical" class="form-label">Critical Alerts Volume</label>
+                        <input type="range" id="volumeCritical" class="form-input" min="0" max="1" step="0.1" value="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="volumeHigh" class="form-label">High Priority Volume</label>
+                        <input type="range" id="volumeHigh" class="form-input" min="0" max="1" step="0.1" value="0.8">
+                    </div>
+                    <div class="form-group">
+                        <label for="volumeMedium" class="form-label">Medium Priority Volume</label>
+                        <input type="range" id="volumeMedium" class="form-input" min="0" max="1" step="0.1" value="0.6">
+                    </div>
+                    <div class="form-group">
+                        <label for="volumeLow" class="form-label">Low Priority Volume</label>
+                        <input type="range" id="volumeLow" class="form-input" min="0" max="1" step="0.1" value="0.4">
+                    </div>
+                </div>
+                
+                <div class="flex gap-3 mt-4">
+                    <button onclick="saveSettings()" class="btn btn-primary flex-1">
+                        Save Settings
+                    </button>
+                    <button onclick="hideModal('settingsModal')" class="btn btn-secondary flex-1">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast Container -->
     <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Popup Notification -->
+    <div id="popupNotification" class="popup-notification">
+        <div class="popup-header">
+            <div class="popup-title" id="popupAlertTitle">New Alert</div>
+            <button onclick="hidePopup()" class="popup-close">×</button>
+        </div>
+        <div class="popup-message" id="popupAlertMessage">Alert message here</div>
+        <div class="popup-footer">
+            <span id="popupAlertCategory" class="alert-category">General</span>
+            <span id="popupAlertTime">Just now</span>
+        </div>
+    </div>
 
     <!-- Install Prompt -->
     <div id="installPrompt" class="install-prompt">
         <div class="flex-1">
             <strong>Install AlertSystem Pro</strong>
-            <div class="text-sm text-muted">Get app-like experience on your device</div>
+            <div class="text-sm text-muted">Get app-like experience with background notifications</div>
         </div>
         <button onclick="installApp()" class="btn btn-primary btn-sm">Install</button>
         <button onclick="hideInstallPrompt()" class="btn btn-secondary btn-sm">Later</button>
@@ -878,6 +1157,21 @@
         let currentUser = null;
         let deferredPrompt = null;
         let realtimeSubscription = null;
+        let notificationSettings = {
+            browserNotifications: true,
+            popupNotifications: true,
+            notificationSounds: true,
+            vibrationEnabled: false,
+            volumes: {
+                critical: 1.0,
+                high: 0.8,
+                medium: 0.6,
+                low: 0.4
+            }
+        };
+        let isAppInstalled = false;
+        let serviceWorkerRegistration = null;
+        let notificationPermission = null;
         
         // ============================================
         // INITIALIZATION
@@ -885,7 +1179,10 @@
         document.addEventListener('DOMContentLoaded', async () => {
             console.log('🚀 AlertSystem Pro Initializing...');
             
-            // Initialize PWA Manifest
+            // Load settings from localStorage
+            loadSettings();
+            
+            // Initialize PWA
             initPWA();
             
             // Initialize Supabase
@@ -894,23 +1191,28 @@
             // Check for PWA install prompt
             initInstallPrompt();
             
-            // Request notification permission
-            if (Notification.permission === 'default') {
-                setTimeout(requestNotificationPermission, 2000);
-            }
+            // Check notification permission
+            checkNotificationPermission();
+            
+            // Register Service Worker for push notifications
+            registerServiceWorker();
             
             console.log('✅ AlertSystem Pro Ready!');
+            
+            // Test if running as PWA
+            isAppInstalled = isRunningAsPWA();
+            updateInstallButton();
         });
         
         // ============================================
-        // PWA SETUP (SIMPLIFIED - No Service Worker)
+        // PWA & SERVICE WORKER SETUP
         // ============================================
         function initPWA() {
             // Simple manifest
             const manifest = {
                 "name": "AlertSystem Pro",
                 "short_name": "AlertSystem",
-                "description": "Real-time Alert Management System",
+                "description": "Real-time Alert Management with Push Notifications",
                 "start_url": ".",
                 "display": "standalone",
                 "background_color": "#4f46e5",
@@ -919,6 +1221,17 @@
                     {
                         "src": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/64/1f6a8.png",
                         "sizes": "64x64",
+                        "type": "image/png",
+                        "purpose": "any maskable"
+                    },
+                    {
+                        "src": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/192/1f6a8.png",
+                        "sizes": "192x192",
+                        "type": "image/png"
+                    },
+                    {
+                        "src": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/512/1f6a8.png",
+                        "sizes": "512x512",
                         "type": "image/png"
                     }
                 ]
@@ -933,6 +1246,128 @@
             manifestLink.rel = 'manifest';
             manifestLink.href = manifestURL;
             document.head.appendChild(manifestLink);
+        }
+        
+        async function registerServiceWorker() {
+            if ('serviceWorker' in navigator) {
+                try {
+                    // Register service worker
+                    serviceWorkerRegistration = await navigator.serviceWorker.register(
+                        URL.createObjectURL(new Blob([
+                            `// Service Worker for AlertSystem Pro
+                            self.addEventListener('install', (event) => {
+                                console.log('Service Worker installing...');
+                                event.waitUntil(self.skipWaiting());
+                            });
+                            
+                            self.addEventListener('activate', (event) => {
+                                console.log('Service Worker activating...');
+                                event.waitUntil(self.clients.claim());
+                            });
+                            
+                            self.addEventListener('push', (event) => {
+                                console.log('Push event received:', event);
+                                
+                                let data = {};
+                                try {
+                                    data = event.data?.json() || {};
+                                } catch (e) {
+                                    data = {
+                                        title: 'New Alert',
+                                        body: 'You have a new alert',
+                                        priority: 'medium'
+                                    };
+                                }
+                                
+                                const options = {
+                                    body: data.body || 'New alert received',
+                                    icon: 'https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/64/1f6a8.png',
+                                    badge: 'https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/64/1f6a8.png',
+                                    tag: 'alert-' + Date.now(),
+                                    data: {
+                                        url: self.location.origin,
+                                        alertId: data.alertId,
+                                        priority: data.priority
+                                    },
+                                    vibrate: data.priority === 'critical' ? [200, 100, 200, 100, 200] : 
+                                             data.priority === 'high' ? [200, 100, 200] : 
+                                             data.priority === 'medium' ? [200] : []
+                                };
+                                
+                                event.waitUntil(
+                                    self.registration.showNotification(data.title || 'New Alert', options)
+                                );
+                            });
+                            
+                            self.addEventListener('notificationclick', (event) => {
+                                console.log('Notification clicked:', event);
+                                event.notification.close();
+                                
+                                event.waitUntil(
+                                    clients.matchAll({ type: 'window', includeUncontrolled: true })
+                                        .then((clientList) => {
+                                            // If a Window client is already open, focus it
+                                            for (const client of clientList) {
+                                                if (client.url === self.location.origin && 'focus' in client) {
+                                                    return client.focus();
+                                                }
+                                            }
+                                            // Otherwise open a new window
+                                            if (clients.openWindow) {
+                                                return clients.openWindow(self.location.origin);
+                                            }
+                                        })
+                                );
+                            });`
+                        ], { type: 'application/javascript' }))
+                    );
+                    
+                    console.log('✅ Service Worker registered:', serviceWorkerRegistration);
+                    
+                    // Subscribe to push notifications
+                    await subscribeToPushNotifications();
+                    
+                } catch (error) {
+                    console.warn('Service Worker registration failed:', error);
+                    showToast('Push notifications unavailable', 'warning');
+                }
+            }
+        }
+        
+        async function subscribeToPushNotifications() {
+            if (!serviceWorkerRegistration) return;
+            
+            try {
+                const subscription = await serviceWorkerRegistration.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: urlBase64ToUint8Array(
+                        'BLx6Jf0tK7M7Yq9wV8nP5rT2sW1zX4cD7aB3gH6jK8lM9pQ2rT5wV8nP5rT2sW1zX4cD7aB3gH6jK8lM9pQ='
+                    )
+                });
+                
+                console.log('✅ Push notification subscription:', subscription);
+                
+                // Store subscription in localStorage for demo
+                localStorage.setItem('pushSubscription', JSON.stringify(subscription));
+                
+            } catch (error) {
+                console.warn('Push subscription failed:', error);
+            }
+        }
+        
+        function urlBase64ToUint8Array(base64String) {
+            const padding = '='.repeat((4 - base64String.length % 4) % 4);
+            const base64 = (base64String + padding)
+                .replace(/\-/g, '+')
+                .replace(/_/g, '/');
+            
+            const rawData = window.atob(base64);
+            const outputArray = new Uint8Array(rawData.length);
+            
+            for (let i = 0; i < rawData.length; ++i) {
+                outputArray[i] = rawData.charCodeAt(i);
+            }
+            return outputArray;
         }
         
         // ============================================
@@ -959,6 +1394,11 @@
                         autoRefreshToken: true,
                         persistSession: true,
                         detectSessionInUrl: true
+                    },
+                    realtime: {
+                        params: {
+                            eventsPerSecond: 10
+                        }
                     }
                 });
                 
@@ -1003,19 +1443,339 @@
             }
         }
         
-        // Helper to load scripts
-        function loadScript(src) {
-            return new Promise((resolve, reject) => {
-                const script = document.createElement('script');
-                script.src = src;
-                script.onload = resolve;
-                script.onerror = reject;
-                document.head.appendChild(script);
-            });
+        // ============================================
+        // NOTIFICATION FUNCTIONS
+        // ============================================
+        function checkNotificationPermission() {
+            if (!("Notification" in window)) {
+                notificationPermission = 'unsupported';
+                document.getElementById('notificationStatus').textContent = 'Unsupported';
+                return;
+            }
+            
+            notificationPermission = Notification.permission;
+            
+            if (notificationPermission === "granted") {
+                document.getElementById('notificationStatus').textContent = 'Enabled';
+            } else if (notificationPermission === "denied") {
+                document.getElementById('notificationStatus').textContent = 'Blocked';
+            } else {
+                document.getElementById('notificationStatus').textContent = 'Request';
+            }
+        }
+        
+        async function requestNotificationPermission() {
+            if (!("Notification" in window)) {
+                showToast("This browser doesn't support notifications", 'warning');
+                return;
+            }
+            
+            if (notificationPermission === "granted") {
+                showToast("Notifications already enabled", 'success');
+                return;
+            }
+            
+            if (notificationPermission !== "denied") {
+                notificationPermission = await Notification.requestPermission();
+                
+                if (notificationPermission === "granted") {
+                    document.getElementById('notificationStatus').textContent = 'Enabled';
+                    showToast("Notifications enabled!", 'success');
+                    
+                    // Register service worker after permission granted
+                    await registerServiceWorker();
+                } else {
+                    document.getElementById('notificationStatus').textContent = 'Blocked';
+                    showToast("Notifications blocked", 'warning');
+                }
+            } else {
+                showToast("Notifications blocked. Please enable in browser settings.", 'warning');
+            }
+        }
+        
+        function showNotification(alert) {
+            // Play sound based on priority
+            if (notificationSettings.notificationSounds) {
+                playNotificationSound(alert.priority);
+            }
+            
+            // Vibrate if enabled and supported
+            if (notificationSettings.vibrationEnabled && "vibrate" in navigator) {
+                const vibrationPattern = getVibrationPattern(alert.priority);
+                navigator.vibrate(vibrationPattern);
+            }
+            
+            // Show popup notification if app is open and popups enabled
+            if (!document.hidden && notificationSettings.popupNotifications) {
+                showPopupNotification(alert);
+            }
+            
+            // Show browser notification if app is closed and browser notifications enabled
+            if ((document.hidden || !isAppInstalled) && notificationSettings.browserNotifications && notificationPermission === "granted") {
+                showBrowserNotification(alert);
+            }
+            
+            // Send push notification if service worker is registered (for installed PWA)
+            if (isAppInstalled && serviceWorkerRegistration && notificationSettings.browserNotifications) {
+                sendPushNotification(alert);
+            }
+        }
+        
+        function showPopupNotification(alert) {
+            const popup = document.getElementById('popupNotification');
+            const title = document.getElementById('popupAlertTitle');
+            const message = document.getElementById('popupAlertMessage');
+            const category = document.getElementById('popupAlertCategory');
+            const time = document.getElementById('popupAlertTime');
+            
+            // Set content
+            title.textContent = alert.title;
+            message.textContent = alert.message;
+            category.textContent = alert.category || 'General';
+            time.textContent = 'Just now';
+            
+            // Set priority class
+            popup.className = `popup-notification ${alert.priority} active`;
+            
+            // Auto-hide after 10 seconds
+            setTimeout(() => {
+                hidePopup();
+            }, 10000);
+            
+            // Shake effect for critical alerts
+            if (alert.priority === 'critical') {
+                popup.style.animation = 'shake 0.5s ease-in-out, glow 2s infinite';
+            }
+        }
+        
+        function hidePopup() {
+            const popup = document.getElementById('popupNotification');
+            popup.classList.remove('active');
+            popup.style.animation = '';
+        }
+        
+        function showBrowserNotification(alert) {
+            if (!("Notification" in window) || notificationPermission !== "granted") {
+                return;
+            }
+            
+            const options = {
+                body: alert.message.substring(0, 120),
+                icon: 'https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/64/1f6a8.png',
+                badge: 'https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/64/1f6a8.png',
+                tag: `alert-${alert.id}`,
+                requireInteraction: alert.priority === 'critical' || alert.priority === 'high',
+                vibrate: getVibrationPattern(alert.priority),
+                data: {
+                    url: window.location.href,
+                    alertId: alert.id
+                }
+            };
+            
+            const notification = new Notification(`🚨 ${alert.priority.toUpperCase()}: ${alert.title}`, options);
+            
+            notification.onclick = () => {
+                window.focus();
+                notification.close();
+            };
+            
+            // Auto-close after 15 seconds for non-critical alerts
+            if (alert.priority !== 'critical') {
+                setTimeout(() => {
+                    notification.close();
+                }, 15000);
+            }
+        }
+        
+        async function sendPushNotification(alert) {
+            if (!serviceWorkerRegistration) return;
+            
+            try {
+                // In a real app, you would send this to your server
+                // For demo, we'll show a local notification
+                if (serviceWorkerRegistration.active) {
+                    serviceWorkerRegistration.active.postMessage({
+                        type: 'SHOW_NOTIFICATION',
+                        title: `🚨 ${alert.priority.toUpperCase()}: ${alert.title}`,
+                        body: alert.message.substring(0, 120),
+                        priority: alert.priority,
+                        alertId: alert.id
+                    });
+                }
+            } catch (error) {
+                console.warn('Push notification failed:', error);
+            }
+        }
+        
+        function playNotificationSound(priority) {
+            const soundId = `sound${priority.charAt(0).toUpperCase() + priority.slice(1)}`;
+            const soundElement = document.getElementById(soundId);
+            
+            if (soundElement) {
+                // Set volume based on priority
+                const volume = notificationSettings.volumes[priority] || 0.5;
+                soundElement.volume = volume;
+                
+                // Play sound
+                soundElement.currentTime = 0;
+                soundElement.play().catch(e => console.warn('Sound play failed:', e));
+                
+                // Loop sound for critical alerts
+                if (priority === 'critical') {
+                    soundElement.loop = true;
+                    setTimeout(() => {
+                        soundElement.loop = false;
+                        soundElement.pause();
+                    }, 5000); // Stop after 5 seconds
+                }
+            }
+        }
+        
+        function getVibrationPattern(priority) {
+            switch(priority) {
+                case 'critical':
+                    return [1000, 500, 1000, 500, 1000]; // Long vibrations
+                case 'high':
+                    return [500, 250, 500]; // Medium vibrations
+                case 'medium':
+                    return [200]; // Short vibration
+                case 'low':
+                    return [100]; // Very short vibration
+                default:
+                    return [200];
+            }
+        }
+        
+        function testNotification() {
+            const testAlert = {
+                id: 'test-' + Date.now(),
+                title: 'Test Notification',
+                message: 'This is a test notification to check if alerts are working properly.',
+                priority: 'medium',
+                category: 'Test',
+                created_at: new Date().toISOString()
+            };
+            
+            showNotification(testAlert);
+            showToast('Test notification sent', 'success');
         }
         
         // ============================================
-        // AUTHENTICATION FUNCTIONS (FIXED)
+        // SETTINGS MANAGEMENT
+        // ============================================
+        function showSettingsModal() {
+            if (!currentUser) {
+                showLoginModal();
+                return;
+            }
+            
+            // Load current settings to form
+            document.getElementById('browserNotifications').checked = notificationSettings.browserNotifications;
+            document.getElementById('popupNotifications').checked = notificationSettings.popupNotifications;
+            document.getElementById('notificationSounds').checked = notificationSettings.notificationSounds;
+            document.getElementById('vibrationEnabled').checked = notificationSettings.vibrationEnabled;
+            
+            document.getElementById('volumeCritical').value = notificationSettings.volumes.critical;
+            document.getElementById('volumeHigh').value = notificationSettings.volumes.high;
+            document.getElementById('volumeMedium').value = notificationSettings.volumes.medium;
+            document.getElementById('volumeLow').value = notificationSettings.volumes.low;
+            
+            showModal('settingsModal');
+        }
+        
+        function saveSettings() {
+            notificationSettings.browserNotifications = document.getElementById('browserNotifications').checked;
+            notificationSettings.popupNotifications = document.getElementById('popupNotifications').checked;
+            notificationSettings.notificationSounds = document.getElementById('notificationSounds').checked;
+            notificationSettings.vibrationEnabled = document.getElementById('vibrationEnabled').checked;
+            
+            notificationSettings.volumes = {
+                critical: parseFloat(document.getElementById('volumeCritical').value),
+                high: parseFloat(document.getElementById('volumeHigh').value),
+                medium: parseFloat(document.getElementById('volumeMedium').value),
+                low: parseFloat(document.getElementById('volumeLow').value)
+            };
+            
+            // Save to localStorage
+            localStorage.setItem('alertSystemSettings', JSON.stringify(notificationSettings));
+            
+            showToast('Settings saved successfully', 'success');
+            hideModal('settingsModal');
+        }
+        
+        function loadSettings() {
+            const savedSettings = localStorage.getItem('alertSystemSettings');
+            if (savedSettings) {
+                notificationSettings = JSON.parse(savedSettings);
+            }
+        }
+        
+        // ============================================
+        // PWA INSTALL PROMPT
+        // ============================================
+        function initInstallPrompt() {
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                showInstallPrompt();
+            });
+            
+            window.addEventListener('appinstalled', () => {
+                deferredPrompt = null;
+                hideInstallPrompt();
+                isAppInstalled = true;
+                updateInstallButton();
+                showToast('App installed successfully! You will now receive background notifications.', 'success');
+                
+                // Re-register service worker for better push notifications
+                setTimeout(() => {
+                    registerServiceWorker();
+                }, 1000);
+            });
+        }
+        
+        function showInstallPrompt() {
+            if (deferredPrompt && !isAppInstalled) {
+                document.getElementById('installPrompt').classList.add('active');
+            }
+        }
+        
+        function hideInstallPrompt() {
+            document.getElementById('installPrompt').classList.remove('active');
+        }
+        
+        async function installApp() {
+            if (!deferredPrompt) return;
+            
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            
+            if (outcome === 'accepted') {
+                deferredPrompt = null;
+            }
+            
+            hideInstallPrompt();
+        }
+        
+        function isRunningAsPWA() {
+            return window.matchMedia('(display-mode: standalone)').matches || 
+                   window.navigator.standalone ||
+                   document.referrer.includes('android-app://');
+        }
+        
+        function updateInstallButton() {
+            const installBtn = document.getElementById('installBtn');
+            if (isAppInstalled) {
+                installBtn.textContent = '📱 Installed';
+                installBtn.disabled = true;
+            } else {
+                installBtn.textContent = '📱 Install App';
+                installBtn.disabled = false;
+            }
+        }
+        
+        // ============================================
+        // AUTHENTICATION FUNCTIONS
         // ============================================
         function showLoginModal() {
             document.getElementById('authModalTitle').textContent = 'Login';
@@ -1046,7 +1806,6 @@
             
             try {
                 if (isSignup) {
-                    // SIMPLE SIGNUP - No triggers or complex profile creation
                     const { data, error } = await supabase.auth.signUp({
                         email,
                         password,
@@ -1059,22 +1818,13 @@
                     
                     if (error) throw error;
                     
-                    // Create user profile manually (no trigger needed)
                     if (data.user) {
-                        try {
-                            await createUserProfile(data.user, email, fullName);
-                            showToast('Signup successful! You are now logged in.', 'success');
-                        } catch (profileError) {
-                            console.warn('Profile creation failed:', profileError);
-                            // Non-critical error - continue anyway
-                            showToast('Signup successful! (Profile setup incomplete)', 'warning');
-                        }
+                        showToast('Signup successful! You are now logged in.', 'success');
                     } else {
                         showToast('Signup completed. Please check your email.', 'success');
                     }
                     
                 } else {
-                    // Login
                     const { data, error } = await supabase.auth.signInWithPassword({
                         email,
                         password
@@ -1094,37 +1844,6 @@
             } finally {
                 submitBtn.textContent = originalText;
                 submitBtn.disabled = false;
-            }
-        }
-        
-        async function createUserProfile(user, email, fullName) {
-            try {
-                // Try to create profile via RPC function
-                const { error: rpcError } = await supabase
-                    .rpc('create_user_profile_if_not_exists', {
-                        user_id: user.id,
-                        user_email: email
-                    });
-                
-                if (rpcError) {
-                    // Fallback: direct insert
-                    const { error: insertError } = await supabase
-                        .from('user_profiles')
-                        .upsert({
-                            id: user.id,
-                            email: email,
-                            full_name: fullName || email.split('@')[0],
-                            created_at: new Date().toISOString(),
-                            updated_at: new Date().toISOString()
-                        }, {
-                            onConflict: 'id'
-                        });
-                    
-                    if (insertError) throw insertError;
-                }
-            } catch (error) {
-                console.warn('Profile creation failed:', error);
-                throw error;
             }
         }
         
@@ -1234,13 +1953,15 @@
         function displaySampleAlerts() {
             const sampleAlerts = [
                 {
+                    id: 'sample-1',
                     title: "Welcome to AlertSystem Pro",
-                    message: "This is a demo alert. Sign up to create and receive real-time alerts.",
+                    message: "This is a demo alert. Sign up to create and receive real-time alerts with notifications.",
                     priority: "medium",
                     category: "Demo",
                     created_at: new Date().toISOString()
                 },
                 {
+                    id: 'sample-2',
                     title: "System Status: Operational",
                     message: "All systems are running normally. No issues reported.",
                     priority: "low",
@@ -1344,9 +2065,15 @@
                     { event: 'INSERT', schema: 'public', table: 'alerts' },
                     (payload) => {
                         console.log('New alert received:', payload.new);
-                        showBrowserNotification(payload.new);
+                        
+                        // Show notification to user
+                        showNotification(payload.new);
+                        
+                        // Refresh alerts list
                         loadAlerts();
-                        showToast(`New alert: ${payload.new.title}`, 'success');
+                        
+                        // Show toast
+                        showToast(`New ${payload.new.priority} alert: ${payload.new.title}`, 'success');
                     }
                 )
                 .on('postgres_changes',
@@ -1360,96 +2087,6 @@
         }
         
         // ============================================
-        // NOTIFICATION FUNCTIONS
-        // ============================================
-        function requestNotificationPermission() {
-            if (!("Notification" in window)) {
-                showToast("This browser doesn't support notifications", 'warning');
-                return;
-            }
-            
-            if (Notification.permission === "granted") {
-                showToast("Notifications already enabled", 'success');
-                return;
-            }
-            
-            if (Notification.permission !== "denied") {
-                Notification.requestPermission().then(permission => {
-                    if (permission === "granted") {
-                        showToast("Notifications enabled!", 'success');
-                    }
-                });
-            } else {
-                showToast("Notifications blocked. Please enable in browser settings.", 'warning');
-            }
-        }
-        
-        function showBrowserNotification(alert) {
-            if (!("Notification" in window) || Notification.permission !== "granted") {
-                return;
-            }
-            
-            if (document.hidden) {
-                const notification = new Notification(`🚨 ${alert.priority.toUpperCase()}: ${alert.title}`, {
-                    body: alert.message.substring(0, 100),
-                    icon: 'https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/64/1f6a8.png',
-                    tag: `alert-${alert.id}`,
-                    requireInteraction: alert.priority === 'critical'
-                });
-                
-                notification.onclick = () => {
-                    window.focus();
-                    notification.close();
-                };
-            }
-        }
-        
-        // ============================================
-        // PWA INSTALL PROMPT
-        // ============================================
-        function initInstallPrompt() {
-            window.addEventListener('beforeinstallprompt', (e) => {
-                e.preventDefault();
-                deferredPrompt = e;
-                showInstallPrompt();
-            });
-            
-            window.addEventListener('appinstalled', () => {
-                deferredPrompt = null;
-                hideInstallPrompt();
-                showToast('App installed successfully!', 'success');
-            });
-        }
-        
-        function showInstallPrompt() {
-            if (deferredPrompt && !isRunningAsPWA()) {
-                document.getElementById('installPrompt').classList.add('active');
-            }
-        }
-        
-        function hideInstallPrompt() {
-            document.getElementById('installPrompt').classList.remove('active');
-        }
-        
-        async function installApp() {
-            if (!deferredPrompt) return;
-            
-            deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
-            
-            if (outcome === 'accepted') {
-                deferredPrompt = null;
-            }
-            
-            hideInstallPrompt();
-        }
-        
-        function isRunningAsPWA() {
-            return window.matchMedia('(display-mode: standalone)').matches || 
-                   window.navigator.standalone;
-        }
-        
-        // ============================================
         // UI UPDATE FUNCTIONS
         // ============================================
         async function onUserLoggedIn() {
@@ -1458,6 +2095,13 @@
             loadUnreadCount();
             subscribeToRealtime();
             loadUserCount();
+            
+            // Request notification permission on login
+            if (notificationPermission === 'default') {
+                setTimeout(() => {
+                    requestNotificationPermission();
+                }, 1000);
+            }
         }
         
         function updateUIForUser() {
@@ -1562,6 +2206,17 @@
                 `Updated at ${now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
         }
         
+        // Helper to load scripts
+        function loadScript(src) {
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = src;
+                script.onload = resolve;
+                script.onerror = reject;
+                document.head.appendChild(script);
+            });
+        }
+        
         // Close modals with Escape key
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
@@ -1582,10 +2237,19 @@
             });
         });
         
+        // Handle page visibility changes
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden && currentUser) {
+                // Page became visible, refresh alerts
+                loadAlerts();
+                loadUnreadCount();
+            }
+        });
+        
         // Initialize welcome message
         setTimeout(() => {
             if (!currentUser) {
-                showToast('Welcome to AlertSystem Pro! Sign up to start creating alerts.', 'info');
+                showToast('Welcome to AlertSystem Pro! Sign up to receive real-time alerts with notifications.', 'info');
             }
         }, 1000);
     </script>
