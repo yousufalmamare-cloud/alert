@@ -6,10 +6,8 @@
     <title>AlertSystem Pro - Real-time Alert Management</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚨</text></svg>">
     
-    <!-- PWA Manifest -->
-    <link rel="manifest" id="app-manifest">
-    
-    <!-- iOS Meta Tags -->
+    <!-- PWA Meta Tags -->
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="AlertSystem">
@@ -782,7 +780,7 @@
                     </div>
                     
                     <div class="form-group hidden" id="authNameGroup">
-                        <label for="authName" class="form-label">Full Name</label>
+                        <label for="authName" class="form-label">Full Name (Optional)</label>
                         <input type="text" id="authName" class="form-input" 
                                placeholder="John Doe">
                     </div>
@@ -868,11 +866,10 @@
     <!-- JavaScript -->
     <script>
         // ============================================
-        // CONFIGURATION
+        // CONFIGURATION - REPLACE WITH YOUR CREDENTIALS
         // ============================================
-        // ⚠️ REPLACE THESE WITH YOUR SUPABASE CREDENTIALS ⚠️
-        const SUPABASE_URL = 'https://gtqlewymsfwhjipcpxlg.supabase.co';  // Get from Supabase Settings → API
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd0cWxld3ltc2Z3aGppcGNweGxnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA3MzU5MzIsImV4cCI6MjA4NjMxMTkzMn0.J0NxvpzJTyR--pUNxVWqnegeQmwVSRKEveamS8ZYJEM';  // Get from Supabase Settings → API
+        const SUPABASE_URL = 'https://gtqlewymsfwhjipcpxlg.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd0Z2xld215c2Z3aGppcGNweGxnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzkyMjE2OTksImV4cCI6MjA1NDc5NzY5OX0.1tGzO2IlciVfP6lO34mzulS8JyY8XHv6vLKhS1P8rMQ';
         
         // ============================================
         // GLOBAL VARIABLES
@@ -881,7 +878,6 @@
         let currentUser = null;
         let deferredPrompt = null;
         let realtimeSubscription = null;
-        let serviceWorkerRegistration = null;
         
         // ============================================
         // INITIALIZATION
@@ -898,9 +894,6 @@
             // Check for PWA install prompt
             initInstallPrompt();
             
-            // Register Service Worker
-            registerServiceWorker();
-            
             // Request notification permission
             if (Notification.permission === 'default') {
                 setTimeout(requestNotificationPermission, 2000);
@@ -910,117 +903,70 @@
         });
         
         // ============================================
-        // PWA SETUP
+        // PWA SETUP (SIMPLIFIED - No Service Worker)
         // ============================================
         function initPWA() {
+            // Simple manifest
             const manifest = {
                 "name": "AlertSystem Pro",
                 "short_name": "AlertSystem",
                 "description": "Real-time Alert Management System",
-                "start_url": "./",
+                "start_url": ".",
                 "display": "standalone",
                 "background_color": "#4f46e5",
                 "theme_color": "#4f46e5",
                 "icons": [
                     {
-                        "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚨</text></svg>",
-                        "sizes": "any",
-                        "type": "image/svg+xml"
+                        "src": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/64/1f6a8.png",
+                        "sizes": "64x64",
+                        "type": "image/png"
                     }
                 ]
             };
             
-            const blob = new Blob([JSON.stringify(manifest, null, 2)], {
-                type: 'application/json'
-            });
-            
+            // Create and add manifest link
+            const manifestString = JSON.stringify(manifest);
+            const blob = new Blob([manifestString], { type: 'application/json' });
             const manifestURL = URL.createObjectURL(blob);
-            document.getElementById('app-manifest').href = manifestURL;
-        }
-        
-        async function registerServiceWorker() {
-            if ('serviceWorker' in navigator) {
-                try {
-                    const registration = await navigator.serviceWorker.register(
-                        URL.createObjectURL(new Blob([
-                            `self.addEventListener('install', (e) => {
-                                e.waitUntil(self.skipWaiting());
-                            });
-                            
-                            self.addEventListener('activate', (e) => {
-                                e.waitUntil(self.clients.claim());
-                            });
-                            
-                            self.addEventListener('push', (e) => {
-                                const data = e.data?.json() || {title: 'New Alert', body: 'Check the alert system'};
-                                
-                                e.waitUntil(
-                                    self.registration.showNotification(data.title, {
-                                        body: data.body,
-                                        icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🚨</text></svg>',
-                                        badge: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" fill="#ef4444"/></svg>',
-                                        vibrate: [200, 100, 200],
-                                        data: { url: './' }
-                                    })
-                                );
-                            });
-                            
-                            self.addEventListener('notificationclick', (e) => {
-                                e.notification.close();
-                                e.waitUntil(
-                                    clients.matchAll({type: 'window'}).then((clientList) => {
-                                        for (const client of clientList) {
-                                            if (client.url === './' && 'focus' in client) {
-                                                return client.focus();
-                                            }
-                                        }
-                                        if (clients.openWindow) {
-                                            return clients.openWindow('./');
-                                        }
-                                    })
-                                );
-                            });`
-                        ], {type: 'application/javascript'}))
-                    );
-                    
-                    serviceWorkerRegistration = registration;
-                    console.log('✅ Service Worker registered');
-                } catch (error) {
-                    console.warn('Service Worker registration failed:', error);
-                }
-            }
+            
+            const manifestLink = document.createElement('link');
+            manifestLink.rel = 'manifest';
+            manifestLink.href = manifestURL;
+            document.head.appendChild(manifestLink);
         }
         
         // ============================================
         // SUPABASE INITIALIZATION
         // ============================================
         async function initSupabase() {
-            // Load Supabase from CDN
-            if (!window.supabase) {
-                const script = document.createElement('script');
-                script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.38.4/dist/umd/supabase.min.js';
-                script.onload = setupSupabase;
-                document.head.appendChild(script);
-            } else {
-                await setupSupabase();
-            }
-        }
-        
-        async function setupSupabase() {
             try {
                 // Check if credentials are set
-                if (SUPABASE_URL.includes('YOUR_SUPABASE_URL') || SUPABASE_ANON_KEY.includes('YOUR_SUPABASE_ANON_KEY')) {
-                    showToast('⚠️ Please set your Supabase credentials in the code', 'warning');
+                if (!SUPABASE_URL || !SUPABASE_ANON_KEY || 
+                    SUPABASE_URL.includes('YOUR_') || SUPABASE_ANON_KEY.includes('YOUR_')) {
+                    showToast('⚠️ Please set your Supabase credentials', 'warning');
+                    console.error('Missing Supabase credentials');
                     return;
                 }
                 
-                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                // Load Supabase from CDN
+                if (!window.supabase) {
+                    await loadScript('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.38.4/dist/umd/supabase.min.js');
+                }
+                
+                // Create Supabase client
+                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+                    auth: {
+                        autoRefreshToken: true,
+                        persistSession: true,
+                        detectSessionInUrl: true
+                    }
+                });
                 
                 // Check current session
-                const { data: { session }, error } = await supabase.auth.getSession();
+                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
                 
-                if (error) {
-                    console.error('Session error:', error);
+                if (sessionError) {
+                    console.error('Session error:', sessionError);
                     showToast('Connection error. Check credentials.', 'error');
                     return;
                 }
@@ -1035,6 +981,7 @@
                 
                 // Listen for auth changes
                 supabase.auth.onAuthStateChange(async (event, session) => {
+                    console.log('Auth state changed:', event);
                     if (event === 'SIGNED_IN' && session) {
                         currentUser = session.user;
                         await onUserLoggedIn();
@@ -1044,6 +991,7 @@
                         updateUIForGuest();
                         if (realtimeSubscription) {
                             supabase.removeChannel(realtimeSubscription);
+                            realtimeSubscription = null;
                         }
                         showToast('Logged out', 'warning');
                     }
@@ -1055,8 +1003,19 @@
             }
         }
         
+        // Helper to load scripts
+        function loadScript(src) {
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = src;
+                script.onload = resolve;
+                script.onerror = reject;
+                document.head.appendChild(script);
+            });
+        }
+        
         // ============================================
-        // AUTHENTICATION FUNCTIONS
+        // AUTHENTICATION FUNCTIONS (FIXED)
         // ============================================
         function showLoginModal() {
             document.getElementById('authModalTitle').textContent = 'Login';
@@ -1087,7 +1046,7 @@
             
             try {
                 if (isSignup) {
-                    // Sign up
+                    // SIMPLE SIGNUP - No triggers or complex profile creation
                     const { data, error } = await supabase.auth.signUp({
                         email,
                         password,
@@ -1100,9 +1059,19 @@
                     
                     if (error) throw error;
                     
-                    showToast('Signup successful! Please check your email.', 'success');
-                    hideModal('loginModal');
-                    document.getElementById('authForm').reset();
+                    // Create user profile manually (no trigger needed)
+                    if (data.user) {
+                        try {
+                            await createUserProfile(data.user, email, fullName);
+                            showToast('Signup successful! You are now logged in.', 'success');
+                        } catch (profileError) {
+                            console.warn('Profile creation failed:', profileError);
+                            // Non-critical error - continue anyway
+                            showToast('Signup successful! (Profile setup incomplete)', 'warning');
+                        }
+                    } else {
+                        showToast('Signup completed. Please check your email.', 'success');
+                    }
                     
                 } else {
                     // Login
@@ -1113,14 +1082,49 @@
                     
                     if (error) throw error;
                     
-                    // Login successful (handled by onAuthStateChange)
+                    showToast('Login successful!', 'success');
                 }
+                
+                hideModal('loginModal');
+                document.getElementById('authForm').reset();
+                
             } catch (error) {
                 console.error('Auth error:', error);
                 showToast(error.message || 'Authentication failed', 'error');
             } finally {
                 submitBtn.textContent = originalText;
                 submitBtn.disabled = false;
+            }
+        }
+        
+        async function createUserProfile(user, email, fullName) {
+            try {
+                // Try to create profile via RPC function
+                const { error: rpcError } = await supabase
+                    .rpc('create_user_profile_if_not_exists', {
+                        user_id: user.id,
+                        user_email: email
+                    });
+                
+                if (rpcError) {
+                    // Fallback: direct insert
+                    const { error: insertError } = await supabase
+                        .from('user_profiles')
+                        .upsert({
+                            id: user.id,
+                            email: email,
+                            full_name: fullName || email.split('@')[0],
+                            created_at: new Date().toISOString(),
+                            updated_at: new Date().toISOString()
+                        }, {
+                            onConflict: 'id'
+                        });
+                    
+                    if (insertError) throw insertError;
+                }
+            } catch (error) {
+                console.warn('Profile creation failed:', error);
+                throw error;
             }
         }
         
@@ -1174,11 +1178,9 @@
         }
         
         async function loadPublicAlerts() {
-            // Load alerts without authentication
             const container = document.getElementById('alertsContainer');
             
             try {
-                // Since RLS allows public read of active alerts, we can query directly
                 const { data: alerts, error } = await supabase
                     .from('alerts')
                     .select('*')
@@ -1193,7 +1195,6 @@
                 
             } catch (error) {
                 console.error('Error loading public alerts:', error);
-                // Show sample alerts for demo
                 displaySampleAlerts();
             }
         }
@@ -1280,7 +1281,6 @@
             submitBtn.disabled = true;
             
             try {
-                // Use the database function we created
                 const { data, error } = await supabase
                     .rpc('create_alert_and_notify', {
                         p_title: title,
@@ -1295,7 +1295,6 @@
                 hideModal('createAlertModal');
                 document.getElementById('createAlertForm').reset();
                 
-                // Refresh alerts
                 loadAlerts();
                 
             } catch (error) {
@@ -1326,7 +1325,6 @@
                     badgeContainer.classList.add('hidden');
                 }
                 
-                // Update "your unread" in statistics
                 document.getElementById('yourUnread').textContent = count || 0;
                 
             } catch (error) {
@@ -1340,21 +1338,14 @@
         function subscribeToRealtime() {
             if (!currentUser || realtimeSubscription) return;
             
-            // Subscribe to new alerts
             realtimeSubscription = supabase
                 .channel('alerts-channel')
                 .on('postgres_changes', 
                     { event: 'INSERT', schema: 'public', table: 'alerts' },
                     (payload) => {
                         console.log('New alert received:', payload.new);
-                        
-                        // Show browser notification
                         showBrowserNotification(payload.new);
-                        
-                        // Refresh alerts list
                         loadAlerts();
-                        
-                        // Show toast
                         showToast(`New alert: ${payload.new.title}`, 'success');
                     }
                 )
@@ -1400,11 +1391,10 @@
             
             if (document.hidden) {
                 const notification = new Notification(`🚨 ${alert.priority.toUpperCase()}: ${alert.title}`, {
-                    body: alert.message,
-                    icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🚨</text></svg>',
-                    badge: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" fill="#ef4444"/></svg>',
+                    body: alert.message.substring(0, 100),
+                    icon: 'https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/64/1f6a8.png',
                     tag: `alert-${alert.id}`,
-                    requireInteraction: alert.priority === 'critical' || alert.priority === 'high'
+                    requireInteraction: alert.priority === 'critical'
                 });
                 
                 notification.onclick = () => {
@@ -1456,8 +1446,7 @@
         
         function isRunningAsPWA() {
             return window.matchMedia('(display-mode: standalone)').matches || 
-                   window.navigator.standalone ||
-                   document.referrer.includes('android-app://');
+                   window.navigator.standalone;
         }
         
         // ============================================
@@ -1517,7 +1506,8 @@
         function hideModal(modalId) {
             document.getElementById(modalId).classList.remove('active');
             document.body.style.overflow = '';
-            document.getElementById(modalId).querySelector('form')?.reset();
+            const form = document.getElementById(modalId)?.querySelector('form');
+            if (form) form.reset();
         }
         
         function showToast(message, type = 'info') {
@@ -1592,16 +1582,12 @@
             });
         });
         
-        // Initialize
-        window.onload = () => {
-            console.log('🌐 AlertSystem Pro Loaded');
-            // Show welcome message
-            setTimeout(() => {
-                if (!currentUser) {
-                    showToast('Welcome to AlertSystem Pro! Sign up to start creating alerts.', 'info');
-                }
-            }, 1000);
-        };
+        // Initialize welcome message
+        setTimeout(() => {
+            if (!currentUser) {
+                showToast('Welcome to AlertSystem Pro! Sign up to start creating alerts.', 'info');
+            }
+        }, 1000);
     </script>
 </body>
 </html>
