@@ -12,6 +12,20 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="AlertSystem">
     
+    <!-- Audio elements for notification sounds -->
+    <audio id="soundCritical" preload="auto">
+        <source src="https://assets.mixkit.co/active_storage/sfx/201/201-preview.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="soundHigh" preload="auto">
+        <source src="https://assets.mixkit.co/active_storage/sfx/257/257-preview.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="soundMedium" preload="auto">
+        <source src="https://assets.mixkit.co/active_storage/sfx/250/250-preview.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="soundLow" preload="auto">
+        <source src="https://assets.mixkit.co/active_storage/sfx/245/245-preview.mp3" type="audio/mpeg">
+    </audio>
+    
     <style>
         /* ===== RESET & BASE ===== */
         * {
@@ -54,6 +68,16 @@
             line-height: 1.5;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
+            transition: background 0.3s;
+        }
+        
+        /* Screen blinking effect */
+        body.blink-critical {
+            animation: blinkCritical 1s infinite;
+        }
+        
+        body.blink-high {
+            animation: blinkHigh 2s infinite;
         }
         
         /* ===== LAYOUT ===== */
@@ -166,6 +190,9 @@
             margin-bottom: 1.5rem;
             padding-bottom: 1rem;
             border-bottom: 2px solid var(--gray-100);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         
         .card-title {
@@ -193,6 +220,7 @@
             box-shadow: var(--shadow);
             transition: transform 0.2s, box-shadow 0.2s;
             animation: slideIn 0.3s ease-out;
+            position: relative;
         }
         
         .alert-item:hover {
@@ -283,6 +311,36 @@
             padding: 0.25rem 0.75rem;
             border-radius: 1rem;
             font-weight: 500;
+        }
+        
+        /* Delete Button */
+        .alert-delete {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid var(--gray-300);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--gray-600);
+            opacity: 0;
+            transition: all 0.2s;
+        }
+        
+        .alert-item:hover .alert-delete {
+            opacity: 1;
+        }
+        
+        .alert-delete:hover {
+            background: var(--danger);
+            color: white;
+            border-color: var(--danger);
         }
         
         /* ===== FORMS ===== */
@@ -484,6 +542,64 @@
             color: var(--gray-900);
         }
         
+        /* ===== FULL SCREEN ALERT NOTIFICATION ===== */
+        .fullscreen-alert {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+        }
+        
+        .fullscreen-alert.active {
+            display: flex;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .fullscreen-content {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            max-width: 90%;
+            width: 500px;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+            animation: pulse 2s infinite;
+        }
+        
+        .fullscreen-content.critical {
+            animation: pulseCritical 1s infinite;
+            border: 3px solid var(--danger);
+        }
+        
+        .fullscreen-content.high {
+            animation: pulseHigh 1.5s infinite;
+            border: 3px solid var(--warning);
+        }
+        
+        .fullscreen-alert-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+        
+        .fullscreen-alert-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .fullscreen-alert-message {
+            color: var(--gray-600);
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+        
         /* ===== LOADING ===== */
         .loading {
             display: flex;
@@ -547,6 +663,31 @@
             to { transform: rotate(360deg); }
         }
         
+        @keyframes blinkCritical {
+            0%, 100% { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+            50% { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
+        }
+        
+        @keyframes blinkHigh {
+            0%, 100% { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+            50% { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+        
+        @keyframes pulseCritical {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(239, 68, 68, 0.5); }
+            50% { transform: scale(1.05); box-shadow: 0 0 40px rgba(239, 68, 68, 0.8); }
+        }
+        
+        @keyframes pulseHigh {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 15px rgba(245, 158, 11, 0.5); }
+            50% { transform: scale(1.03); box-shadow: 0 0 30px rgba(245, 158, 11, 0.8); }
+        }
+        
         /* ===== RESPONSIVE ===== */
         @media (max-width: 640px) {
             .header-content {
@@ -584,6 +725,11 @@
             .toast {
                 min-width: auto;
                 width: calc(100vw - 2rem);
+            }
+            
+            .fullscreen-content {
+                padding: 1.5rem;
+                margin: 1rem;
             }
         }
         
@@ -649,6 +795,7 @@
                     <div id="userSection" class="hidden">
                         <span id="userEmail" class="text-muted"></span>
                         <button onclick="showCreateAlertModal()" class="btn btn-primary btn-sm">New Alert</button>
+                        <button onclick="showSettingsModal()" class="btn btn-secondary btn-sm">Settings</button>
                         <button onclick="logout()" class="btn btn-secondary btn-sm">Logout</button>
                     </div>
                 </div>
@@ -708,6 +855,10 @@
                             <span>Your Unread:</span>
                             <strong id="yourUnread">0</strong>
                         </div>
+                        <div class="flex justify-between">
+                            <span>Notifications:</span>
+                            <strong id="notificationStatus">Off</strong>
+                        </div>
                     </div>
                 </div>
 
@@ -722,6 +873,9 @@
                         </button>
                         <button onclick="testNotification()" class="btn btn-secondary btn-sm">
                             🔔 Test Notification
+                        </button>
+                        <button onclick="installPWA()" class="btn btn-secondary btn-sm" id="installBtn">
+                            📱 Install App
                         </button>
                     </div>
                 </div>
@@ -794,10 +948,10 @@
                     <div class="form-group">
                         <label for="alertPriority" class="form-label">Priority</label>
                         <select id="alertPriority" class="form-select" required>
-                            <option value="low">Low</option>
-                            <option value="medium" selected>Medium</option>
-                            <option value="high">High</option>
-                            <option value="critical">Critical</option>
+                            <option value="low">Low - Gentle sound</option>
+                            <option value="medium" selected>Medium - Normal sound</option>
+                            <option value="high">High - Loud sound, Red blinking</option>
+                            <option value="critical">Critical - Very loud sound, Red blinking fast</option>
                         </select>
                     </div>
                     
@@ -821,6 +975,63 @@
         </div>
     </div>
 
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">⚙️ Notification Settings</h3>
+                <button onclick="hideModal('settingsModal')" class="modal-close">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="enableSounds" checked>
+                        Enable Notification Sounds
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="enableFullscreen" checked>
+                        Enable Full-screen Alerts for Critical/High
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="enableBlinking" checked>
+                        Enable Screen Blinking for Critical/High
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="enableVibration" checked>
+                        Enable Vibration (Mobile)
+                    </label>
+                </div>
+                
+                <div class="flex gap-3 mt-4">
+                    <button onclick="saveSettings()" class="btn btn-primary flex-1">
+                        Save Settings
+                    </button>
+                    <button onclick="hideModal('settingsModal')" class="btn btn-secondary flex-1">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Full Screen Alert Notification -->
+    <div id="fullscreenAlert" class="fullscreen-alert">
+        <div class="fullscreen-content" id="fullscreenContent">
+            <div class="fullscreen-alert-icon" id="fullscreenIcon">🚨</div>
+            <h2 class="fullscreen-alert-title" id="fullscreenTitle">ALERT!</h2>
+            <div class="fullscreen-alert-message" id="fullscreenMessage">Important alert message</div>
+            <button onclick="closeFullscreenAlert()" class="btn btn-primary">
+                Acknowledge
+            </button>
+        </div>
+    </div>
+
     <!-- Toast Container -->
     <div class="toast-container" id="toastContainer"></div>
 
@@ -829,7 +1040,6 @@
         // ============================================
         // CONFIGURATION
         // ============================================
-        // ⚠️ REPLACE WITH YOUR ACTUAL SUPABASE CREDENTIALS ⚠️
         const SUPABASE_URL = 'https://gtqlewymsfwhjipcpxlg.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd0cWxld3ltc2Z3aGppcGNweGxnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA3MzU5MzIsImV4cCI6MjA4NjMxMTkzMn0.J0NxvpzJTyR--pUNxVWqnegeQmwVSRKEveamS8ZYJEM';
         
@@ -838,7 +1048,17 @@
         // ============================================
         let supabase = null;
         let currentUser = null;
+        let deferredPrompt = null;
         let realtimeSubscription = null;
+        let serviceWorkerRegistration = null;
+        
+        // Notification settings
+        let notificationSettings = {
+            enableSounds: true,
+            enableFullscreen: true,
+            enableBlinking: true,
+            enableVibration: true
+        };
         
         // ============================================
         // INITIALIZATION
@@ -846,49 +1066,94 @@
         document.addEventListener('DOMContentLoaded', async () => {
             console.log('🚀 AlertSystem Pro Initializing...');
             
+            // Load settings
+            loadSettings();
+            
             // Initialize Supabase
             await initSupabase();
+            
+            // Setup PWA
+            setupPWA();
             
             console.log('✅ AlertSystem Pro Ready!');
         });
         
         // ============================================
-        // SUPABASE INITIALIZATION (FIXED)
+        // PWA SETUP
+        // ============================================
+        function setupPWA() {
+            // Register Service Worker for push notifications
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => {
+                        console.log('Service Worker registered');
+                        serviceWorkerRegistration = reg;
+                    })
+                    .catch(err => console.log('Service Worker registration failed:', err));
+            }
+            
+            // Listen for install prompt
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                document.getElementById('installBtn').style.display = 'block';
+            });
+        }
+        
+        function installPWA() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('User accepted the install prompt');
+                    }
+                    deferredPrompt = null;
+                });
+            }
+        }
+        
+        // ============================================
+        // SUPABASE INITIALIZATION
         // ============================================
         async function initSupabase() {
             try {
-                // Load Supabase from CDN with fallback
+                // Load Supabase from CDN
                 if (!window.supabase) {
-                    await loadSupabaseScript();
+                    await new Promise((resolve, reject) => {
+                        const script = document.createElement('script');
+                        script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.38.4/dist/umd/supabase.min.js';
+                        script.onload = resolve;
+                        script.onerror = reject;
+                        document.head.appendChild(script);
+                    });
                 }
                 
-                // Check if credentials are set
-                if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-                    showToast('⚠️ Supabase credentials not configured', 'warning');
-                    console.error('Missing Supabase credentials');
-                    loadSampleAlerts();
-                    return;
-                }
+                // Create client
+                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+                    auth: {
+                        autoRefreshToken: true,
+                        persistSession: true
+                    }
+                });
                 
-                // Create Supabase client with simpler config
-                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                
-                // Check current session
+                // Check session
                 const { data: { session } } = await supabase.auth.getSession();
                 
                 if (session) {
                     currentUser = session.user;
                     await onUserLoggedIn();
-                    showToast('Welcome back!', 'success');
                 } else {
                     updateUIForGuest();
-                    loadPublicAlerts();
                 }
+                
+                // Load alerts for everyone (logged out users can see alerts)
+                loadAlerts();
+                
+                // Subscribe to realtime updates
+                subscribeToRealtime();
                 
                 // Listen for auth changes
                 supabase.auth.onAuthStateChange((event, session) => {
-                    console.log('Auth state changed:', event);
-                    
                     if (event === 'SIGNED_IN' && session) {
                         currentUser = session.user;
                         onUserLoggedIn();
@@ -896,60 +1161,301 @@
                     } else if (event === 'SIGNED_OUT') {
                         currentUser = null;
                         updateUIForGuest();
-                        if (realtimeSubscription) {
-                            supabase.removeChannel(realtimeSubscription);
-                            realtimeSubscription = null;
-                        }
-                        showToast('Logged out', 'warning');
+                        showToast('Logged out', 'info');
                     }
                 });
                 
             } catch (error) {
-                console.error('Supabase initialization failed:', error);
-                showToast('Failed to connect. Using demo mode.', 'warning');
+                console.error('Supabase init failed:', error);
+                showToast('Using offline mode', 'warning');
                 loadSampleAlerts();
             }
         }
         
-        async function loadSupabaseScript() {
-            return new Promise((resolve, reject) => {
-                const script = document.createElement('script');
-                script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.38.4/dist/umd/supabase.min.js';
-                script.onload = resolve;
-                script.onerror = () => {
-                    console.warn('Failed to load Supabase from CDN');
-                    // Create dummy supabase object for demo mode
-                    window.supabase = {
-                        auth: {
-                            getSession: () => Promise.resolve({ data: { session: null }, error: null }),
-                            signUp: () => Promise.resolve({ data: { user: null }, error: null }),
-                            signInWithPassword: () => Promise.resolve({ data: { user: null }, error: null }),
-                            signOut: () => Promise.resolve({ error: null }),
-                            onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } })
-                        },
-                        from: () => ({
-                            select: () => ({
-                                eq: () => ({
-                                    order: () => ({
-                                        limit: () => Promise.resolve({ data: [], error: null })
-                                    })
-                                })
-                            })
-                        }),
-                        channel: () => ({
-                            on: () => ({
-                                subscribe: () => ({})
-                            })
-                        })
-                    };
-                    resolve();
-                };
-                document.head.appendChild(script);
-            });
+        // ============================================
+        // ALERT FUNCTIONS (PUBLIC ACCESS)
+        // ============================================
+        async function loadAlerts() {
+            const container = document.getElementById('alertsContainer');
+            
+            try {
+                // Everyone can see alerts (even logged out users)
+                const { data: alerts, error } = await supabase
+                    .from('alerts')
+                    .select('*')
+                    .eq('is_active', true)
+                    .order('created_at', { ascending: false })
+                    .limit(50);
+                
+                if (error) throw error;
+                
+                displayAlerts(alerts);
+                updateStatistics(alerts);
+                
+            } catch (error) {
+                console.error('Error loading alerts:', error);
+                loadSampleAlerts();
+            }
+        }
+        
+        function displayAlerts(alerts) {
+            const container = document.getElementById('alertsContainer');
+            
+            if (!alerts || alerts.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center text-muted">
+                        <p>No active alerts</p>
+                        <p class="text-sm mt-2">Create the first alert!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = alerts.map(alert => `
+                <div class="alert-item ${alert.priority}" data-id="${alert.id}">
+                    ${currentUser ? `
+                        <button class="alert-delete" onclick="deleteAlert('${alert.id}')" title="Delete Alert">
+                            🗑️
+                        </button>
+                    ` : ''}
+                    <div class="alert-header">
+                        <div class="alert-title">${escapeHtml(alert.title)}</div>
+                        <span class="alert-priority priority-${alert.priority}">
+                            ${alert.priority.toUpperCase()}
+                        </span>
+                    </div>
+                    <div class="alert-message">${escapeHtml(alert.message)}</div>
+                    <div class="alert-footer">
+                        <span class="alert-category">${alert.category || 'General'}</span>
+                        <span class="alert-time" title="${new Date(alert.created_at).toLocaleString()}">
+                            ${formatTimeAgo(new Date(alert.created_at))}
+                        </span>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        async function deleteAlert(alertId) {
+            if (!currentUser) {
+                showToast('Please login to delete alerts', 'error');
+                return;
+            }
+            
+            if (!confirm('Are you sure you want to delete this alert?')) {
+                return;
+            }
+            
+            try {
+                const { error } = await supabase
+                    .from('alerts')
+                    .update({ is_active: false })
+                    .eq('id', alertId);
+                
+                if (error) throw error;
+                
+                showToast('Alert deleted successfully', 'success');
+                loadAlerts();
+                
+            } catch (error) {
+                console.error('Error deleting alert:', error);
+                showToast('Failed to delete alert', 'error');
+            }
+        }
+        
+        function loadSampleAlerts() {
+            const sampleAlerts = [
+                {
+                    id: 'sample-1',
+                    title: "Welcome to AlertSystem Pro",
+                    message: "This is a demo alert. Sign up to create and receive real-time alerts.",
+                    priority: "medium",
+                    category: "Demo",
+                    created_at: new Date().toISOString()
+                }
+            ];
+            
+            displayAlerts(sampleAlerts);
+            updateStatistics(sampleAlerts);
         }
         
         // ============================================
-        // AUTHENTICATION FUNCTIONS (FIXED)
+        // NOTIFICATION FUNCTIONS
+        // ============================================
+        function showNotification(alert) {
+            // Play sound
+            if (notificationSettings.enableSounds) {
+                playNotificationSound(alert.priority);
+            }
+            
+            // Screen blinking for critical/high alerts
+            if (notificationSettings.enableBlinking) {
+                if (alert.priority === 'critical') {
+                    document.body.classList.add('blink-critical');
+                    setTimeout(() => {
+                        document.body.classList.remove('blink-critical');
+                    }, 5000);
+                } else if (alert.priority === 'high') {
+                    document.body.classList.add('blink-high');
+                    setTimeout(() => {
+                        document.body.classList.remove('blink-high');
+                    }, 3000);
+                }
+            }
+            
+            // Full-screen alert for critical/high
+            if (notificationSettings.enableFullscreen && (alert.priority === 'critical' || alert.priority === 'high')) {
+                showFullscreenAlert(alert);
+            }
+            
+            // Browser notification (works even when app closed)
+            showBrowserNotification(alert);
+            
+            // Push notification for installed PWA
+            sendPushNotification(alert);
+        }
+        
+        function playNotificationSound(priority) {
+            const soundId = `sound${priority.charAt(0).toUpperCase() + priority.slice(1)}`;
+            const soundElement = document.getElementById(soundId);
+            
+            if (soundElement) {
+                // Set volume based on priority
+                if (priority === 'critical') soundElement.volume = 1.0;
+                else if (priority === 'high') soundElement.volume = 0.8;
+                else if (priority === 'medium') soundElement.volume = 0.5;
+                else soundElement.volume = 0.3;
+                
+                // Play sound
+                soundElement.currentTime = 0;
+                soundElement.play().catch(e => console.warn('Sound play failed:', e));
+                
+                // Loop for critical alerts
+                if (priority === 'critical') {
+                    soundElement.loop = true;
+                    setTimeout(() => {
+                        soundElement.loop = false;
+                    }, 5000);
+                }
+            }
+        }
+        
+        function showFullscreenAlert(alert) {
+            const fullscreen = document.getElementById('fullscreenAlert');
+            const content = document.getElementById('fullscreenContent');
+            const icon = document.getElementById('fullscreenIcon');
+            const title = document.getElementById('fullscreenTitle');
+            const message = document.getElementById('fullscreenMessage');
+            
+            // Set content
+            icon.textContent = alert.priority === 'critical' ? '🚨🚨' : '🚨';
+            title.textContent = `${alert.priority.toUpperCase()} ALERT: ${alert.title}`;
+            message.textContent = alert.message;
+            
+            // Set styling based on priority
+            content.className = `fullscreen-content ${alert.priority}`;
+            
+            // Show fullscreen alert
+            fullscreen.classList.add('active');
+            
+            // Auto-close after 10 seconds for critical, 5 for high
+            const timeout = alert.priority === 'critical' ? 10000 : 5000;
+            setTimeout(() => {
+                closeFullscreenAlert();
+            }, timeout);
+        }
+        
+        function closeFullscreenAlert() {
+            document.getElementById('fullscreenAlert').classList.remove('active');
+        }
+        
+        function showBrowserNotification(alert) {
+            if (!("Notification" in window)) return;
+            
+            if (Notification.permission === "granted") {
+                const options = {
+                    body: alert.message.substring(0, 100),
+                    icon: 'https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/64/1f6a8.png',
+                    badge: 'https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/64/1f6a8.png',
+                    tag: `alert-${alert.id}`,
+                    requireInteraction: alert.priority === 'critical',
+                    vibrate: notificationSettings.enableVibration ? [200, 100, 200] : []
+                };
+                
+                const notification = new Notification(`🚨 ${alert.title}`, options);
+                
+                notification.onclick = () => {
+                    window.focus();
+                    notification.close();
+                };
+            }
+        }
+        
+        async function sendPushNotification(alert) {
+            if (!serviceWorkerRegistration) return;
+            
+            try {
+                const subscription = await serviceWorkerRegistration.pushManager.getSubscription();
+                if (subscription) {
+                    // Send push notification
+                    await fetch('https://fcm.googleapis.com/fcm/send', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': 'key=YOUR_FIREBASE_KEY',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            to: subscription.endpoint,
+                            notification: {
+                                title: `🚨 ${alert.title}`,
+                                body: alert.message.substring(0, 100),
+                                icon: 'https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/64/1f6a8.png',
+                                badge: 'https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/64/1f6a8.png',
+                                tag: `alert-${alert.id}`
+                            },
+                            data: {
+                                priority: alert.priority,
+                                url: window.location.href
+                            }
+                        })
+                    });
+                }
+            } catch (error) {
+                console.warn('Push notification failed:', error);
+            }
+        }
+        
+        // ============================================
+        // REALTIME SUBSCRIPTIONS
+        // ============================================
+        function subscribeToRealtime() {
+            if (realtimeSubscription) return;
+            
+            try {
+                realtimeSubscription = supabase
+                    .channel('alerts-channel')
+                    .on('postgres_changes', 
+                        { event: 'INSERT', schema: 'public', table: 'alerts' },
+                        (payload) => {
+                            console.log('New alert received:', payload.new);
+                            
+                            // Show notification
+                            showNotification(payload.new);
+                            
+                            // Update alerts list
+                            loadAlerts();
+                            
+                            // Show toast
+                            showToast(`New ${payload.new.priority} alert!`, 'success');
+                        }
+                    )
+                    .subscribe();
+            } catch (error) {
+                console.warn('Realtime subscription failed:', error);
+            }
+        }
+        
+        // ============================================
+        // AUTHENTICATION FUNCTIONS
         // ============================================
         function showLoginModal() {
             document.getElementById('authModalTitle').textContent = 'Login';
@@ -970,7 +1476,6 @@
             
             const email = document.getElementById('authEmail').value.trim();
             const password = document.getElementById('authPassword').value;
-            const fullName = document.getElementById('authName')?.value.trim();
             const isSignup = document.getElementById('authModalTitle').textContent === 'Sign Up';
             
             const submitBtn = document.getElementById('authSubmitBtn');
@@ -980,31 +1485,15 @@
             
             try {
                 if (isSignup) {
-                    // SIMPLE SIGNUP - No triggers or complex setup
                     const { data, error } = await supabase.auth.signUp({
                         email,
                         password
                     });
                     
-                    if (error) {
-                        if (error.message.includes('already registered')) {
-                            // User exists, try login instead
-                            const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({
-                                email,
-                                password
-                            });
-                            
-                            if (loginError) throw loginError;
-                            showToast('Account already exists. Logged in successfully!', 'success');
-                        } else {
-                            throw error;
-                        }
-                    } else {
-                        showToast('Signup successful! You are now logged in.', 'success');
-                    }
+                    if (error) throw error;
                     
+                    showToast('Signup successful! Please check your email.', 'success');
                 } else {
-                    // Login
                     const { data, error } = await supabase.auth.signInWithPassword({
                         email,
                         password
@@ -1012,7 +1501,7 @@
                     
                     if (error) throw error;
                     
-                    // Login successful (handled by onAuthStateChange)
+                    // Login handled by auth state change
                 }
                 
                 hideModal('loginModal');
@@ -1020,20 +1509,7 @@
                 
             } catch (error) {
                 console.error('Auth error:', error);
-                
-                // Friendly error messages
-                let errorMessage = 'Authentication failed';
-                if (error.message.includes('Invalid login credentials')) {
-                    errorMessage = 'Invalid email or password';
-                } else if (error.message.includes('Email not confirmed')) {
-                    errorMessage = 'Please check your email to confirm your account';
-                } else if (error.message.includes('User already registered')) {
-                    errorMessage = 'Account already exists. Please login instead.';
-                } else {
-                    errorMessage = error.message;
-                }
-                
-                showToast(errorMessage, 'error');
+                showToast(error.message || 'Authentication failed', 'error');
             } finally {
                 submitBtn.textContent = originalText;
                 submitBtn.disabled = false;
@@ -1051,132 +1527,13 @@
         }
         
         // ============================================
-        // ALERT FUNCTIONS (FIXED)
+        // ALERT CREATION
         // ============================================
-        async function loadAlerts() {
-            const container = document.getElementById('alertsContainer');
-            container.innerHTML = `
-                <div class="loading">
-                    <div class="loading-spinner"></div>
-                    <p>Loading alerts...</p>
-                </div>
-            `;
-            
-            try {
-                // Try to load from Supabase
-                const { data: alerts, error } = await supabase
-                    .from('alerts')
-                    .select('*')
-                    .eq('is_active', true)
-                    .order('created_at', { ascending: false })
-                    .limit(50);
-                
-                if (error) throw error;
-                
-                if (alerts && alerts.length > 0) {
-                    displayAlerts(alerts);
-                    updateLastUpdateTime();
-                    updateStatistics(alerts);
-                } else {
-                    // No alerts in database, show sample
-                    loadSampleAlerts();
-                }
-                
-            } catch (error) {
-                console.error('Error loading alerts:', error);
-                // Fallback to sample alerts
-                loadSampleAlerts();
-            }
-        }
-        
-        function loadPublicAlerts() {
-            // Load alerts without authentication
-            const container = document.getElementById('alertsContainer');
-            
-            try {
-                // Try public access
-                loadAlerts().catch(() => {
-                    // If that fails, show sample alerts
-                    loadSampleAlerts();
-                });
-            } catch (error) {
-                console.error('Error loading public alerts:', error);
-                loadSampleAlerts();
-            }
-        }
-        
-        function loadSampleAlerts() {
-            const sampleAlerts = [
-                {
-                    id: 'sample-1',
-                    title: "Welcome to AlertSystem Pro",
-                    message: "This is a demo alert. Sign up to create and receive real-time alerts.",
-                    priority: "medium",
-                    category: "Demo",
-                    created_at: new Date().toISOString()
-                },
-                {
-                    id: 'sample-2',
-                    title: "System Status: Operational",
-                    message: "All systems are running normally. No issues reported.",
-                    priority: "low",
-                    category: "System",
-                    created_at: new Date(Date.now() - 3600000).toISOString()
-                },
-                {
-                    id: 'sample-3',
-                    title: "Maintenance Scheduled",
-                    message: "System maintenance is scheduled for tomorrow at 2:00 AM UTC.",
-                    priority: "high",
-                    category: "Maintenance",
-                    created_at: new Date(Date.now() - 7200000).toISOString()
-                }
-            ];
-            
-            displayAlerts(sampleAlerts);
-            updateStatistics(sampleAlerts);
-            showToast('Using demo mode. Sign up for full features.', 'info');
-        }
-        
-        function displayAlerts(alerts) {
-            const container = document.getElementById('alertsContainer');
-            
-            if (!alerts || alerts.length === 0) {
-                container.innerHTML = `
-                    <div class="text-center text-muted">
-                        <p>No active alerts</p>
-                        <p class="text-sm mt-2">Create the first alert!</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            container.innerHTML = alerts.map(alert => `
-                <div class="alert-item ${alert.priority}">
-                    <div class="alert-header">
-                        <div class="alert-title">${escapeHtml(alert.title)}</div>
-                        <span class="alert-priority priority-${alert.priority}">
-                            ${alert.priority.toUpperCase()}
-                        </span>
-                    </div>
-                    <div class="alert-message">${escapeHtml(alert.message)}</div>
-                    <div class="alert-footer">
-                        <span class="alert-category">${alert.category || 'General'}</span>
-                        <span class="alert-time" title="${new Date(alert.created_at).toLocaleString()}">
-                            ${formatTimeAgo(new Date(alert.created_at))}
-                        </span>
-                    </div>
-                </div>
-            `).join('');
-        }
-        
         function showCreateAlertModal() {
             if (!currentUser) {
                 showLoginModal();
                 return;
             }
-            document.getElementById('createAlertForm').reset();
-            document.getElementById('alertPriority').value = 'medium';
             showModal('createAlertModal');
         }
         
@@ -1184,7 +1541,7 @@
             event.preventDefault();
             
             if (!currentUser) {
-                showToast('Please login first', 'error');
+                showToast('Please login to create alerts', 'error');
                 return;
             }
             
@@ -1199,60 +1556,32 @@
             submitBtn.disabled = true;
             
             try {
-                // First check if we have database access
-                const { error: testError } = await supabase
-                    .from('alerts')
-                    .select('count', { count: 'exact', head: true });
-                
-                if (testError && testError.message.includes('permission denied')) {
-                    throw new Error('Database permission denied. Please check RLS policies.');
-                }
-                
-                // Try to create alert using function
+                // Create alert
                 const { data, error } = await supabase
-                    .rpc('create_alert_and_notify', {
-                        p_title: title,
-                        p_message: message,
-                        p_priority: priority,
-                        p_category: category
-                    });
+                    .from('alerts')
+                    .insert([{
+                        title,
+                        message,
+                        priority,
+                        category,
+                        is_active: true,
+                        created_by: currentUser.id
+                    }])
+                    .select()
+                    .single();
                 
-                if (error) {
-                    // Fallback: direct insert
-                    const { data: insertData, error: insertError } = await supabase
-                        .from('alerts')
-                        .insert([{
-                            title,
-                            message,
-                            priority,
-                            category,
-                            is_active: true,
-                            created_at: new Date().toISOString()
-                        }])
-                        .select()
-                        .single();
-                    
-                    if (insertError) throw insertError;
-                }
+                if (error) throw error;
                 
                 showToast('Alert created successfully!', 'success');
                 hideModal('createAlertModal');
                 document.getElementById('createAlertForm').reset();
                 
-                // Refresh alerts
+                // Reload alerts
                 loadAlerts();
                 
             } catch (error) {
                 console.error('Error creating alert:', error);
-                
-                let errorMessage = 'Failed to create alert';
-                if (error.message.includes('permission denied')) {
-                    errorMessage = 'Permission denied. Please check your database permissions.';
-                } else if (error.message.includes('function')) {
-                    errorMessage = 'Database function not available. Contact administrator.';
-                }
-                
-                showToast(errorMessage, 'error');
+                showToast('Failed to create alert', 'error');
             } finally {
                 submitBtn.textContent = originalText;
                 submitBtn.disabled = false;
@@ -1260,35 +1589,41 @@
         }
         
         // ============================================
-        // REALTIME SUBSCRIPTIONS (SIMPLIFIED)
+        // SETTINGS MANAGEMENT
         // ============================================
-        function subscribeToRealtime() {
-            if (!currentUser || realtimeSubscription) return;
+        function showSettingsModal() {
+            document.getElementById('enableSounds').checked = notificationSettings.enableSounds;
+            document.getElementById('enableFullscreen').checked = notificationSettings.enableFullscreen;
+            document.getElementById('enableBlinking').checked = notificationSettings.enableBlinking;
+            document.getElementById('enableVibration').checked = notificationSettings.enableVibration;
+            showModal('settingsModal');
+        }
+        
+        function saveSettings() {
+            notificationSettings.enableSounds = document.getElementById('enableSounds').checked;
+            notificationSettings.enableFullscreen = document.getElementById('enableFullscreen').checked;
+            notificationSettings.enableBlinking = document.getElementById('enableBlinking').checked;
+            notificationSettings.enableVibration = document.getElementById('enableVibration').checked;
             
-            try {
-                realtimeSubscription = supabase
-                    .channel('alerts-channel')
-                    .on('postgres_changes', 
-                        { event: 'INSERT', schema: 'public', table: 'alerts' },
-                        (payload) => {
-                            console.log('New alert received:', payload.new);
-                            loadAlerts();
-                            showToast(`New alert: ${payload.new.title}`, 'success');
-                        }
-                    )
-                    .subscribe();
-            } catch (error) {
-                console.warn('Realtime subscription failed:', error);
+            localStorage.setItem('alertSystemSettings', JSON.stringify(notificationSettings));
+            
+            showToast('Settings saved', 'success');
+            hideModal('settingsModal');
+        }
+        
+        function loadSettings() {
+            const saved = localStorage.getItem('alertSystemSettings');
+            if (saved) {
+                notificationSettings = JSON.parse(saved);
             }
         }
         
         // ============================================
-        // UI UPDATE FUNCTIONS
+        // UI FUNCTIONS
         // ============================================
         async function onUserLoggedIn() {
             updateUIForUser();
             loadAlerts();
-            subscribeToRealtime();
         }
         
         function updateUIForUser() {
@@ -1302,7 +1637,6 @@
             document.getElementById('authSection').classList.remove('hidden');
             document.getElementById('userSection').classList.add('hidden');
             document.getElementById('createAlertCard').classList.add('hidden');
-            document.getElementById('notificationBadge').classList.add('hidden');
         }
         
         function updateStatistics(alerts) {
@@ -1371,65 +1705,24 @@
             return date.toLocaleDateString();
         }
         
-        function updateLastUpdateTime() {
-            const now = new Date();
-            document.getElementById('lastUpdate').textContent = 
-                `Updated at ${now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
-        }
-        
         function testNotification() {
-            if (!("Notification" in window)) {
-                showToast("This browser doesn't support notifications", 'warning');
-                return;
-            }
+            const testAlert = {
+                id: 'test-' + Date.now(),
+                title: 'Test Notification',
+                message: 'This is a test notification with sound and visual effects.',
+                priority: 'critical',
+                category: 'Test'
+            };
             
-            if (Notification.permission === "granted") {
-                new Notification("AlertSystem Test", {
-                    body: "This is a test notification",
-                    icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🚨</text></svg>'
-                });
-                showToast('Test notification sent', 'success');
-            } else if (Notification.permission !== "denied") {
-                Notification.requestPermission().then(permission => {
-                    if (permission === "granted") {
-                        new Notification("AlertSystem Test", {
-                            body: "This is a test notification",
-                            icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🚨</text></svg>'
-                        });
-                        showToast('Test notification sent', 'success');
-                    }
-                });
-            } else {
-                showToast("Notifications blocked. Please enable in browser settings.", 'warning');
-            }
+            showNotification(testAlert);
         }
         
-        // Close modals with Escape key
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                document.querySelectorAll('.modal.active').forEach(modal => {
-                    modal.classList.remove('active');
-                });
-                document.body.style.overflow = '';
-            }
-        });
-        
-        // Close modals when clicking outside
-        document.querySelectorAll('.modal').forEach(modal => {
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) {
-                    modal.classList.remove('active');
-                    document.body.style.overflow = '';
-                }
-            });
-        });
-        
-        // Initialize welcome message
-        setTimeout(() => {
-            if (!currentUser) {
-                showToast('Welcome to AlertSystem Pro! Sign up to start creating alerts.', 'info');
-            }
-        }, 1000);
+        // Request notification permission
+        if (Notification.permission === 'default') {
+            setTimeout(() => {
+                Notification.requestPermission();
+            }, 2000);
+        }
     </script>
 </body>
 </html>
