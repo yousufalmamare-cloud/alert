@@ -3,286 +3,230 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>InformaCast Pro - Critical Alert System</title>
+    <title>InformaCast Pro - Push Notifications</title>
     
-    <!-- PWA Manifest -->
-    <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22InformaCast%20Pro%22%2C%22short_name%22%3A%22InformaCast%22%2C%22start_url%22%3A%22%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230a2e42%22%2C%22theme_color%22%3A%22%230a5c8c%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22https%3A%2F%2Fcdn-icons-png.flaticon.com%2F512%2F893%2F893257.png%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%7D%5D%7D">
-    
+    <!-- iOS specific meta tags -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#0a5c8c">
+    <meta name="apple-mobile-web-app-title" content="InformaCast">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/893/893257.png">
+    
+    <!-- Manifest -->
+    <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22InformaCast%20Pro%22%2C%22short_name%22%3A%22InformaCast%22%2C%22start_url%22%3A%22%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230a2e42%22%2C%22theme_color%22%3A%22%230a5c8c%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22https%3A%2F%2Fcdn-icons-png.flaticon.com%2F512%2F893%2F893257.png%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%7D%5D%7D">
     
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background: linear-gradient(145deg, #0a2e42 0%, #0c384f 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(145deg, #0a2e42, #0c384f);
             color: white;
             min-height: 100vh;
             display: flex;
-            flex-direction: column;
-            align-items: center;
+            justify-content: center;
             padding: 16px;
         }
-
         .container {
             max-width: 800px;
             width: 100%;
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(12px);
-            border-radius: 40px;
-            padding: 28px 24px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 24px;
             margin: 20px 0;
+            border: 1px solid rgba(255,255,255,0.2);
         }
-
-        .header {
+        h1 {
             text-align: center;
+            color: #ffd700;
+            font-size: 2.2em;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #b0d4e8;
             margin-bottom: 30px;
         }
-
-        .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            color: #ffd700;
-            text-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);
-        }
-
-        .header p {
-            color: #b0d4e8;
-            font-size: 1.1em;
-        }
-
-        .status-bar {
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 50px;
-            padding: 15px 20px;
+        .status-box {
+            background: rgba(0,0,0,0.3);
+            border-radius: 20px;
+            padding: 20px;
             margin-bottom: 25px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .status-item {
             display: flex;
             align-items: center;
-            gap: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            gap: 15px;
+            padding: 12px;
+            border-radius: 15px;
+            margin: 8px 0;
         }
-
-        .dot {
-            width: 12px;
-            height: 12px;
+        .status-icon {
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
-            background: #4caf50;
-            box-shadow: 0 0 10px #4caf50;
-            animation: pulse 2s infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
         }
-
-        .dot.warning {
-            background: #ffaa33;
-            box-shadow: 0 0 10px #ffaa33;
+        .status-icon.green { background: #4caf50; }
+        .status-icon.red { background: #ff4444; }
+        .status-icon.yellow { background: #ffaa33; }
+        .status-text {
+            flex: 1;
+            font-weight: 500;
         }
-
-        @keyframes pulse {
-            0% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.7; transform: scale(1.2); }
-            100% { opacity: 1; transform: scale(1); }
+        .setup-instructions {
+            background: rgba(255,215,0,0.1);
+            border: 2px solid #ffd700;
+            border-radius: 20px;
+            padding: 20px;
+            margin: 20px 0;
         }
-
-        .install-btn {
-            background: #ffd700;
-            color: #0a2e42;
-            border: none;
-            border-radius: 30px;
-            padding: 15px 25px;
+        .setup-instructions ol {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+        .setup-instructions li {
+            margin: 10px 0;
+            color: #e0e0e0;
+        }
+        .setup-instructions .highlight {
+            color: #ffd700;
             font-weight: bold;
-            font-size: 1.1em;
-            cursor: pointer;
-            width: 100%;
-            margin: 15px 0;
-            transition: transform 0.2s;
         }
-
-        .install-btn:hover {
-            transform: translateY(-2px);
-        }
-
         .alert-creator {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 30px;
-            padding: 25px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            padding: 20px;
             margin: 25px 0;
-            border: 1px solid rgba(255, 255, 255, 0.2);
         }
-
         textarea {
             width: 100%;
-            padding: 18px;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            border-radius: 20px;
-            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 15px;
+            background: rgba(0,0,0,0.3);
             color: white;
             font-size: 16px;
-            margin-bottom: 20px;
+            margin: 15px 0;
             resize: vertical;
         }
-
         textarea:focus {
             outline: none;
             border-color: #ffd700;
         }
-
         .severity-selector {
             display: flex;
-            gap: 12px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
+            gap: 10px;
+            margin: 15px 0;
         }
-
         .severity-btn {
             flex: 1;
-            min-width: 100px;
             padding: 15px;
             border: none;
             border-radius: 30px;
             font-weight: bold;
             cursor: pointer;
-            transition: all 0.3s;
             opacity: 0.7;
+            transition: all 0.3s;
         }
-
         .severity-btn.active {
             opacity: 1;
             transform: scale(1.02);
-            box-shadow: 0 0 20px currentColor;
+            box-shadow: 0 0 15px currentColor;
         }
-
-        .critical-btn {
-            background: #ff4444;
-            color: white;
-        }
-
-        .warning-btn {
-            background: #ffaa33;
-            color: #0a2e42;
-        }
-
-        .info-btn {
-            background: #4caf50;
-            color: white;
-        }
-
+        .critical-btn { background: #ff4444; color: white; }
+        .warning-btn { background: #ffaa33; color: black; }
+        .info-btn { background: #4caf50; color: white; }
         .send-btn {
             width: 100%;
             padding: 18px;
             background: linear-gradient(145deg, #ffd700, #ffb300);
             border: none;
-            border-radius: 50px;
+            border-radius: 30px;
             color: #0a2e42;
             font-weight: bold;
             font-size: 1.2em;
             cursor: pointer;
-            transition: all 0.3s;
+            margin-top: 15px;
+            transition: transform 0.3s;
         }
-
         .send-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4);
         }
-
         .alerts-section {
             margin-top: 30px;
         }
-
-        .alerts-section h3 {
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
         .alert-card {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255,255,255,0.1);
             border-left: 5px solid;
-            padding: 18px;
-            margin-bottom: 12px;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+        }
+        .test-result {
+            text-align: center;
+            padding: 15px;
+            margin: 10px 0;
             border-radius: 15px;
-            transition: transform 0.2s;
-        }
-
-        .alert-card:hover {
-            transform: translateX(5px);
-        }
-
-        .alert-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-        }
-
-        .alert-severity {
             font-weight: bold;
         }
-
-        .alert-time {
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 0.9em;
+        .test-success {
+            background: rgba(76,175,80,0.2);
+            color: #4caf50;
+            border: 1px solid #4caf50;
         }
-
-        .alert-message {
-            font-size: 1.1em;
-            margin: 8px 0;
-        }
-
-        .alert-sender {
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 0.9em;
-        }
-
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #ffd700;
-            color: #0a2e42;
-            padding: 15px 30px;
-            border-radius: 50px;
-            font-weight: bold;
-            z-index: 9999;
-            animation: slideUp 0.3s;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-        }
-
-        @keyframes slideUp {
-            from { transform: translate(-50%, 100%); opacity: 0; }
-            to { transform: translate(-50%, 0); opacity: 1; }
-        }
-
-        .hidden {
-            display: none;
+        .test-fail {
+            background: rgba(255,68,68,0.2);
+            color: #ff8888;
+            border: 1px solid #ff4444;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1>🚨 InformaCast Pro</h1>
-            <p>Critical Alert & Notification System</p>
+        <h1>📢 InformaCast Pro</h1>
+        <p class="subtitle">Push Notifications That Ring Your Phone</p>
+
+        <!-- Status Dashboard -->
+        <div class="status-box">
+            <div class="status-item">
+                <div class="status-icon" id="iosIcon">📱</div>
+                <div class="status-text" id="iosStatus">Checking device...</div>
+            </div>
+            <div class="status-item">
+                <div class="status-icon" id="installIcon">📲</div>
+                <div class="status-text" id="installStatus">Checking installation...</div>
+            </div>
+            <div class="status-item">
+                <div class="status-icon" id="notifyIcon">🔔</div>
+                <div class="status-text" id="notifyStatus">Checking permissions...</div>
+            </div>
         </div>
 
-        <div class="status-bar" id="statusBar">
-            <span class="dot" id="statusDot"></span>
-            <span id="statusText">Checking notification permissions...</span>
+        <!-- CRITICAL: iOS Setup Instructions -->
+        <div class="setup-instructions" id="setupInstructions">
+            <h3 style="color: #ffd700; margin-bottom: 15px;">📱 iOS SETUP REQUIRED - Follow exactly:</h3>
+            <ol>
+                <li><span class="highlight">1.</span> Open this page in <strong>SAFARI</strong> (not Chrome)</li>
+                <li><span class="highlight">2.</span> Tap <strong>Share button</strong> (square with arrow)</li>
+                <li><span class="highlight">3.</span> Scroll down and tap <strong>"Add to Home Screen"</strong></li>
+                <li><span class="highlight">4.</span> Tap <strong>"Add"</strong> in top right corner</li>
+                <li><span class="highlight">5.</span> <strong>CLOSE SAFARI</strong> completely (swipe up)</li>
+                <li><span class="highlight">6.</span> Open app from <strong>Home Screen</strong> (new icon)</li>
+                <li><span class="highlight">7.</span> Tap <strong>"Allow"</strong> when notification prompt appears</li>
+            </ol>
         </div>
 
-        <button id="installBtn" class="install-btn hidden">
-            📲 Install App on Home Screen
-        </button>
+        <!-- Test Result Display -->
+        <div id="testResult" style="display: none;"></div>
 
+        <!-- Alert Creator -->
         <div class="alert-creator">
-            <h3 style="margin-bottom: 15px;">📢 Create New Alert</h3>
-            <textarea id="messageInput" placeholder="Enter alert message..." rows="3"></textarea>
+            <h3 style="margin-bottom: 15px;">✍️ Create Test Alert</h3>
+            <textarea id="messageInput" placeholder="Enter your test message..." rows="3">This is a test notification - your phone should ring!</textarea>
             
             <div class="severity-selector" id="severitySelector">
                 <button class="severity-btn critical-btn active" data-severity="critical">🔴 CRITICAL</button>
@@ -291,21 +235,15 @@
             </div>
 
             <button id="sendBtn" class="send-btn">
-                📢 SEND PUSH ALERT
+                📢 SEND TEST ALERT
             </button>
         </div>
 
+        <!-- Recent Alerts -->
         <div class="alerts-section">
-            <h3>
-                <span>📋 Recent Alerts</span>
-                <button id="refreshBtn" style="background: none; border: none; color: white; cursor: pointer;">
-                    🔄
-                </button>
-            </h3>
+            <h3>📋 Recent Alerts</h3>
             <div id="alertsList">
-                <div style="text-align: center; padding: 20px; color: rgba(255,255,255,0.5);">
-                    <i class="fas fa-circle-notch fa-spin"></i> Loading alerts...
-                </div>
+                <p style="text-align: center; opacity: 0.5;">Loading...</p>
             </div>
         </div>
     </div>
@@ -314,11 +252,11 @@
         // =============================================
         // CONFIGURATION - UPDATE WITH YOUR SUPABASE INFO
         // =============================================
-        const SUPABASE_URL = 'https://zwhbpqhrlkxhgrhmgyvx.supabase.co'; // REPLACE THIS
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp3aGJwcWhybGt4aGdyaG1neXZ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEwODUzMDUsImV4cCI6MjA4NjY2MTMwNX0.jPcxT1wZMCbPFQkK4qWhLfQkO8MtvVPlyga1i2cto6o'; // REPLACE THIS
+        const SUPABASE_URL = 'https://zwhbpqhrlkxhgrhmgyvx.supabase.co';  // REPLACE THIS
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp3aGJwcWhybGt4aGdyaG1neXZ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEwODUzMDUsImV4cCI6MjA4NjY2MTMwNX0.jPcxT1wZMCbPFQkK4qWhLfQkO8MtvVPlyga1i2cto6o';                 // REPLACE THIS
 
         // =============================================
-        // SERVICE WORKER FOR PUSH NOTIFICATIONS
+        // SERVICE WORKER (for push notifications)
         // =============================================
         const swCode = `
         self.addEventListener('install', (event) => {
@@ -335,25 +273,23 @@
             const data = event.data.json();
             
             let title = '📢 INFO';
-            let vibration = [200, 100, 200];
-            
-            if (data.severity === 'critical') {
-                title = '🚨 CRITICAL ALERT';
-                vibration = [500, 200, 500, 200, 500];
-            } else if (data.severity === 'warning') {
-                title = '⚠️ WARNING';
-                vibration = [300, 100, 300];
-            }
-
-            const options = {
-                body: data.message,
+            let options = {
+                body: data.message || 'Test notification',
                 icon: 'https://cdn-icons-png.flaticon.com/512/893/893257.png',
                 badge: 'https://cdn-icons-png.flaticon.com/512/893/893257.png',
-                vibrate: vibration,
-                data: { url: '/' },
+                vibrate: [200, 100, 200],
                 requireInteraction: true,
-                silent: false
+                silent: false,
+                tag: 'alert-' + Date.now()
             };
+
+            if (data.severity === 'critical') {
+                title = '🚨 CRITICAL ALERT';
+                options.vibrate = [500, 200, 500, 200, 500];
+            } else if (data.severity === 'warning') {
+                title = '⚠️ WARNING';
+                options.vibrate = [300, 100, 300];
+            }
 
             event.waitUntil(
                 self.registration.showNotification(title, options)
@@ -363,7 +299,12 @@
         self.addEventListener('notificationclick', (event) => {
             event.notification.close();
             event.waitUntil(
-                clients.openWindow('/')
+                clients.matchAll({ type: 'window' }).then(clientList => {
+                    if (clientList.length > 0) {
+                        return clientList[0].focus();
+                    }
+                    return clients.openWindow('/');
+                })
             );
         });
         `;
@@ -373,17 +314,66 @@
         // =============================================
         let currentSeverity = 'critical';
         let swRegistration = null;
+        let isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        let isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
 
         // =============================================
-        // INITIALIZATION
+        // UPDATE STATUS DASHBOARD
         // =============================================
-        window.addEventListener('load', async () => {
-            await setupServiceWorker();
-            await loadAlerts();
-            setupEventListeners();
-            checkInstallPrompt();
-        });
+        function updateStatus() {
+            // iOS Device Check
+            const iosIcon = document.getElementById('iosIcon');
+            const iosStatus = document.getElementById('iosStatus');
+            if (isIOS) {
+                iosIcon.className = 'status-icon green';
+                iosIcon.textContent = '✅';
+                iosStatus.textContent = '✓ iOS Device Detected';
+            } else {
+                iosIcon.className = 'status-icon red';
+                iosIcon.textContent = '❌';
+                iosStatus.textContent = 'Not iOS - Push may not work';
+            }
 
+            // Installation Check
+            const installIcon = document.getElementById('installIcon');
+            const installStatus = document.getElementById('installStatus');
+            if (isStandalone) {
+                installIcon.className = 'status-icon green';
+                installIcon.textContent = '✅';
+                installStatus.textContent = '✓ Installed to Home Screen';
+                document.getElementById('setupInstructions').style.display = 'none';
+            } else if (isIOS) {
+                installIcon.className = 'status-icon red';
+                installIcon.textContent = '❌';
+                installStatus.textContent = 'NOT INSTALLED - Follow steps above';
+                document.getElementById('setupInstructions').style.display = 'block';
+            } else {
+                installIcon.className = 'status-icon yellow';
+                installIcon.textContent = '⚠️';
+                installStatus.textContent = 'Install recommended';
+            }
+
+            // Notification Permission
+            const notifyIcon = document.getElementById('notifyIcon');
+            const notifyStatus = document.getElementById('notifyStatus');
+            if (Notification.permission === 'granted') {
+                notifyIcon.className = 'status-icon green';
+                notifyIcon.textContent = '✅';
+                notifyStatus.textContent = '✓ Notifications Allowed';
+            } else if (Notification.permission === 'denied') {
+                notifyIcon.className = 'status-icon red';
+                notifyIcon.textContent = '❌';
+                notifyStatus.textContent = 'Notifications Blocked';
+            } else {
+                notifyIcon.className = 'status-icon yellow';
+                notifyIcon.textContent = '⚠️';
+                notifyStatus.textContent = 'Permission Needed';
+            }
+        }
+
+        // =============================================
+        // SETUP SERVICE WORKER
+        // =============================================
         async function setupServiceWorker() {
             if ('serviceWorker' in navigator) {
                 try {
@@ -391,29 +381,24 @@
                     const url = URL.createObjectURL(blob);
                     swRegistration = await navigator.serviceWorker.register(url, { scope: '/' });
                     
-                    const permission = await Notification.requestPermission();
-                    if (permission === 'granted') {
-                        updateStatus('active', 'Notifications active - Alerts will ring your phone!');
-                    } else {
-                        updateStatus('warning', 'Notifications blocked - Please enable in settings');
+                    // Request permission if needed
+                    if (Notification.permission === 'default') {
+                        await Notification.requestPermission();
                     }
+                    
+                    updateStatus();
                 } catch (error) {
-                    updateStatus('warning', 'Push notifications unavailable');
+                    console.log('Service Worker error:', error);
                 }
             }
         }
 
-        function updateStatus(type, message) {
-            const dot = document.getElementById('statusDot');
-            const text = document.getElementById('statusText');
-            
-            dot.className = 'dot' + (type === 'warning' ? ' warning' : '');
-            text.textContent = message;
-        }
-
+        // =============================================
+        // LOAD ALERTS FROM SUPABASE
+        // =============================================
         async function loadAlerts() {
             try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/alerts?order=created_at.desc&limit=20`, {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/alerts?order=created_at.desc&limit=10`, {
                     headers: {
                         'apikey': SUPABASE_ANON_KEY,
                         'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
@@ -429,17 +414,10 @@
                 displayAlerts([
                     {
                         id: '1',
-                        message: 'Welcome to InformaCast Pro! Update SUPABASE_URL and SUPABASE_ANON_KEY in the code to connect to your database.',
-                        severity: 'info',
+                        message: '⚠️ Please update SUPABASE_URL and SUPABASE_ANON_KEY in the code',
+                        severity: 'warning',
                         sender: 'system',
                         created_at: new Date().toISOString()
-                    },
-                    {
-                        id: '2',
-                        message: 'Click the CRITICAL button and send a test alert to see push notifications in action!',
-                        severity: 'critical',
-                        sender: 'system',
-                        created_at: new Date(Date.now() - 60000).toISOString()
                     }
                 ]);
             }
@@ -447,45 +425,41 @@
 
         function displayAlerts(alerts) {
             const list = document.getElementById('alertsList');
-            
             if (!alerts || alerts.length === 0) {
-                list.innerHTML = '<p style="text-align: center; padding: 20px;">No alerts yet</p>';
+                list.innerHTML = '<p style="text-align: center; opacity: 0.5;">No alerts yet</p>';
                 return;
             }
             
-            let html = '';
-            alerts.forEach(alert => {
-                const time = new Date(alert.created_at).toLocaleTimeString([], { 
-                    hour: '2-digit', 
-                    minute: '2-digit',
-                    hour12: true 
-                });
-                
-                const color = alert.severity === 'critical' ? '#ff4444' : 
-                             alert.severity === 'warning' ? '#ffaa33' : '#4caf50';
-                
-                html += `
-                    <div class="alert-card" style="border-left-color: ${color}">
-                        <div class="alert-header">
-                            <span class="alert-severity" style="color: ${color}">${alert.severity.toUpperCase()}</span>
-                            <span class="alert-time">${time}</span>
-                        </div>
-                        <div class="alert-message">${escapeHtml(alert.message)}</div>
-                        <div class="alert-sender">From: ${escapeHtml(alert.sender)}</div>
+            list.innerHTML = alerts.map(alert => `
+                <div class="alert-card" style="border-left-color: ${alert.severity === 'critical' ? '#ff4444' : alert.severity === 'warning' ? '#ffaa33' : '#4caf50'}">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <strong>${alert.severity.toUpperCase()}</strong>
+                        <small>${new Date(alert.created_at).toLocaleTimeString()}</small>
                     </div>
-                `;
-            });
-            list.innerHTML = html;
+                    <p style="margin: 5px 0;">${escapeHtml(alert.message)}</p>
+                    <small>From: ${escapeHtml(alert.sender)}</small>
+                </div>
+            `).join('');
         }
 
+        // =============================================
+        // SEND TEST ALERT
+        // =============================================
         async function sendAlert() {
             const message = document.getElementById('messageInput').value.trim();
             if (!message) {
-                showToast('⚠️ Please enter a message');
+                showTestResult('Please enter a message', false);
                 return;
             }
 
+            // Show sending status
+            const sendBtn = document.getElementById('sendBtn');
+            const originalText = sendBtn.textContent;
+            sendBtn.textContent = '⏳ SENDING...';
+            sendBtn.disabled = true;
+
             try {
+                // Send to Supabase
                 const response = await fetch(`${SUPABASE_URL}/rest/v1/alerts`, {
                     method: 'POST',
                     headers: {
@@ -505,36 +479,43 @@
                 // Show local notification
                 if (swRegistration && Notification.permission === 'granted') {
                     await swRegistration.showNotification(
-                        currentSeverity === 'critical' ? '🚨 CRITICAL' : 
-                        currentSeverity === 'warning' ? '⚠️ WARNING' : '📢 INFO',
+                        currentSeverity === 'critical' ? '🚨 TEST CRITICAL' : 
+                        currentSeverity === 'warning' ? '⚠️ TEST WARNING' : '📢 TEST INFO',
                         {
                             body: message,
                             icon: 'https://cdn-icons-png.flaticon.com/512/893/893257.png',
                             vibrate: currentSeverity === 'critical' ? [500,200,500] : [200,100,200],
-                            requireInteraction: true
+                            requireInteraction: true,
+                            tag: 'test-' + Date.now()
                         }
                     );
+                    
+                    showTestResult('✅ Alert sent! Check your notifications!', true);
+                } else {
+                    showTestResult('✅ Alert saved to database (but notifications not enabled)', true);
                 }
 
                 document.getElementById('messageInput').value = '';
                 await loadAlerts();
-                showToast('✅ Alert sent!');
-                
+
             } catch (error) {
                 console.error('Send error:', error);
-                showToast('❌ Failed to send. Check Supabase configuration.');
+                showTestResult('❌ Failed to send. Check Supabase configuration.', false);
+            } finally {
+                sendBtn.textContent = originalText;
+                sendBtn.disabled = false;
             }
         }
 
-        function showToast(message) {
-            const toast = document.createElement('div');
-            toast.className = 'toast';
-            toast.textContent = message;
-            document.body.appendChild(toast);
+        function showTestResult(message, isSuccess) {
+            const resultDiv = document.getElementById('testResult');
+            resultDiv.style.display = 'block';
+            resultDiv.className = `test-result ${isSuccess ? 'test-success' : 'test-fail'}`;
+            resultDiv.textContent = message;
             
             setTimeout(() => {
-                toast.remove();
-            }, 3000);
+                resultDiv.style.display = 'none';
+            }, 5000);
         }
 
         function escapeHtml(text) {
@@ -543,54 +524,46 @@
             return div.innerHTML;
         }
 
-        function setupEventListeners() {
-            // Severity selector
-            document.querySelectorAll('.severity-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    document.querySelectorAll('.severity-btn').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    currentSeverity = btn.dataset.severity;
-                });
+        // =============================================
+        // EVENT LISTENERS
+        // =============================================
+        document.querySelectorAll('.severity-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.severity-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentSeverity = btn.dataset.severity;
             });
+        });
 
-            // Send button
-            document.getElementById('sendBtn').addEventListener('click', sendAlert);
+        document.getElementById('sendBtn').addEventListener('click', sendAlert);
 
-            // Refresh button
-            document.getElementById('refreshBtn').addEventListener('click', loadAlerts);
+        // =============================================
+        // INITIALIZATION
+        // =============================================
+        window.addEventListener('load', async () => {
+            await setupServiceWorker();
+            await loadAlerts();
+            updateStatus();
 
-            // Enter key in textarea
-            document.getElementById('messageInput').addEventListener('keypress', (e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    sendAlert();
-                }
-            });
-        }
-
-        function checkInstallPrompt() {
-            // PWA install prompt
-            window.addEventListener('beforeinstallprompt', (e) => {
-                e.preventDefault();
-                const installBtn = document.getElementById('installBtn');
-                installBtn.classList.remove('hidden');
-                installBtn.onclick = async () => {
-                    e.prompt();
-                    const { outcome } = await e.userChoice;
-                    if (outcome === 'accepted') {
-                        installBtn.classList.add('hidden');
+            // Monitor installation status changes
+            if (isIOS) {
+                setInterval(() => {
+                    const newStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+                    if (newStandalone !== isStandalone) {
+                        isStandalone = newStandalone;
+                        updateStatus();
                     }
-                };
-            });
-
-            // Hide install button if already installed
-            if (window.matchMedia('(display-mode: standalone)').matches) {
-                document.getElementById('installBtn').classList.add('hidden');
+                }, 1000);
             }
-        }
+        });
 
-        // Auto-refresh alerts every 10 seconds
-        setInterval(loadAlerts, 10000);
+        // Handle visibility change (when app returns to foreground)
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                loadAlerts();
+                updateStatus();
+            }
+        });
     </script>
 </body>
 </html>
