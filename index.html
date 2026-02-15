@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>InformaCast Pro - Critical Alerts</title>
     
-    <!-- PWA Manifest (embedded) -->
+    <!-- PWA Manifest -->
     <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22InformaCast%20Pro%22%2C%22short_name%22%3A%22InformaCast%22%2C%22start_url%22%3A%22%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230a2e42%22%2C%22theme_color%22%3A%22%230a5c8c%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22https%3A%2F%2Fcdn-icons-png.flaticon.com%2F512%2F893%2F893257.png%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%2C%22purpose%22%3A%22any%20maskable%22%7D%5D%7D">
     
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -23,9 +23,9 @@
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: 'Inter', sans-serif;
             background: linear-gradient(145deg, #0a2e42 0%, #0c384f 100%);
-            color: #e8f1f8;
+            color: white;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -36,11 +36,11 @@
         .app-container {
             max-width: 900px;
             width: 100%;
-            background: rgba(255,255,255,0.08);
+            background: rgba(255, 255, 255, 0.08);
             backdrop-filter: blur(12px);
             border-radius: 40px;
             padding: 28px 24px;
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             margin: 20px 0;
         }
 
@@ -50,16 +50,14 @@
             align-items: center;
             margin-bottom: 30px;
             padding: 12px 20px;
-            background: rgba(0,0,0,0.2);
+            background: rgba(0, 0, 0, 0.2);
             border-radius: 100px;
-            border: 1px solid rgba(255,255,255,0.1);
         }
 
         .notification-status {
             display: flex;
             align-items: center;
             gap: 12px;
-            font-size: 0.9rem;
         }
 
         .dot {
@@ -83,7 +81,7 @@
         }
 
         .install-btn {
-            background: rgba(255,255,255,0.15);
+            background: rgba(255, 255, 255, 0.15);
             border: none;
             color: white;
             padding: 10px 20px;
@@ -93,7 +91,11 @@
             align-items: center;
             gap: 8px;
             cursor: pointer;
-            border: 1px solid rgba(255,255,255,0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .install-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
         }
 
         .logo-section {
@@ -106,7 +108,7 @@
         .logo-icon {
             font-size: 42px;
             color: #ffd700;
-            background: rgba(255,215,0,0.15);
+            background: rgba(255, 215, 0, 0.15);
             padding: 16px;
             border-radius: 24px;
         }
@@ -115,19 +117,19 @@
             font-weight: 800;
             font-size: 2.2rem;
             color: white;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
         }
 
         .logo-text p {
             color: #b0d4e8;
-            font-size: 0.95rem;
         }
 
         .alert-creator {
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.1);
             border-radius: 32px;
             padding: 28px;
             margin-bottom: 32px;
-            border: 1px solid rgba(255,255,255,0.15);
+            border: 1px solid rgba(255, 255, 255, 0.15);
         }
 
         .creator-title {
@@ -143,10 +145,10 @@
         .input-field {
             width: 100%;
             padding: 18px 20px;
-            border: 2px solid rgba(255,255,255,0.2);
+            border: 2px solid rgba(255, 255, 255, 0.2);
             border-radius: 20px;
             font-size: 1rem;
-            background: rgba(0,0,0,0.3);
+            background: rgba(0, 0, 0, 0.3);
             color: white;
             margin-bottom: 20px;
         }
@@ -154,6 +156,7 @@
         .input-field:focus {
             border-color: #ffd700;
             outline: none;
+            box-shadow: 0 0 0 4px rgba(255, 215, 0, 0.1);
         }
 
         .alert-type-selector {
@@ -165,17 +168,17 @@
 
         .type-option {
             flex: 1 1 140px;
-            background: rgba(0,0,0,0.3);
-            border: 2px solid rgba(255,255,255,0.15);
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.15);
             border-radius: 40px;
-            padding: 14px 12px;
+            padding: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
             font-weight: 700;
-            color: rgba(255,255,255,0.9);
             cursor: pointer;
+            transition: all 0.2s;
         }
 
         .type-option.selected {
@@ -183,7 +186,7 @@
             border-color: #ffd700;
             color: #0a2e42;
             transform: scale(1.02);
-            box-shadow: 0 0 20px rgba(255,215,0,0.5);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
         }
 
         .btn-send {
@@ -191,7 +194,7 @@
             background: linear-gradient(145deg, #ffd700, #ffb300);
             border: none;
             border-radius: 50px;
-            padding: 18px 20px;
+            padding: 18px;
             color: #0a2e42;
             font-weight: 800;
             font-size: 1.2rem;
@@ -200,6 +203,14 @@
             justify-content: center;
             gap: 12px;
             cursor: pointer;
+            transition: all 0.2s;
+            border-bottom: 4px solid #c28f00;
+        }
+
+        .btn-send:hover {
+            transform: translateY(-2px);
+            border-bottom-width: 2px;
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4);
         }
 
         .feed-header {
@@ -209,23 +220,37 @@
             margin: 20px 0;
         }
 
+        .feed-header h3 {
+            font-weight: 700;
+            color: white;
+            display: flex;
+            gap: 12px;
+        }
+
         .alert-card {
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.1);
             border-radius: 28px;
             padding: 24px;
             margin-bottom: 18px;
             border-left: 12px solid;
+            transition: all 0.2s;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-left-width: 12px;
         }
 
-        .alert-critical { border-left-color: #ff4444; }
-        .alert-warning { border-left-color: #ffaa33; }
-        .alert-info { border-left-color: #4caf50; }
+        .alert-card:hover {
+            transform: translateX(5px);
+        }
 
-        .test-push-btn {
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.2);
+        .alert-critical { border-left-color: #ff4444; background: rgba(255, 68, 68, 0.1); }
+        .alert-warning { border-left-color: #ffaa33; background: rgba(255, 170, 51, 0.1); }
+        .alert-info { border-left-color: #4caf50; background: rgba(76, 175, 80, 0.1); }
+
+        .test-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             color: white;
-            padding: 12px 20px;
+            padding: 12px;
             border-radius: 30px;
             display: flex;
             align-items: center;
@@ -236,8 +261,24 @@
             width: 100%;
         }
 
-        .hidden { display: none; }
-        
+        .test-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @keyframes slideUp {
+            from { transform: translate(-50%, 100%); opacity: 0; }
+            to { transform: translate(-50%, 0); opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+
         @media (max-width: 480px) {
             .app-container { padding: 20px 16px; }
             .logo-text h1 { font-size: 1.8rem; }
@@ -249,7 +290,7 @@
         <div class="status-bar">
             <div class="notification-status" id="notificationStatus">
                 <span class="dot" id="statusDot"></span>
-                <span id="statusText">Checking notifications...</span>
+                <span id="statusText">Initializing...</span>
             </div>
             <button id="installPWA" class="install-btn hidden">
                 <i class="fas fa-download"></i> Install App
@@ -271,7 +312,7 @@
                 <i class="fas fa-bolt" style="color: #ffd700;"></i> 
                 Broadcast Emergency Alert
             </div>
-            <textarea id="alertMessage" class="input-field" placeholder="Type your alert message..." rows="2"></textarea>
+            <textarea id="alertMessage" class="input-field" placeholder="Type emergency alert message..." rows="2"></textarea>
             
             <div class="alert-type-selector" id="severitySelector">
                 <div class="type-option selected" data-type="critical">
@@ -292,28 +333,29 @@
 
         <div class="feed-header">
             <h3><i class="fas fa-broadcast-tower"></i> Live Alerts</h3>
-            <button id="refreshBtn" style="background: rgba(255,255,255,0.1); border: none; color: white; padding: 10px 18px; border-radius: 30px;">
+            <button id="refreshBtn" style="background: rgba(255,255,255,0.1); border: none; color: white; padding: 10px 18px; border-radius: 30px; cursor: pointer;">
                 <i class="fas fa-sync-alt"></i> Refresh
             </button>
         </div>
 
-        <div id="alertFeed"></div>
+        <div id="alertFeed">
+            <div style="text-align: center; padding: 40px; color: rgba(255,255,255,0.5);">
+                <i class="fas fa-circle-notch fa-spin fa-2x"></i>
+                <p style="margin-top: 10px;">Loading alerts...</p>
+            </div>
+        </div>
 
-        <button id="testNotificationBtn" class="test-push-btn">
+        <button id="testNotificationBtn" class="test-btn">
             <i class="fas fa-bell"></i> Test Push on This Device
         </button>
     </div>
 
     <script>
         // =============================================
-        // SINGLE FILE PWA WITH PUSH NOTIFICATIONS
+        // CONFIGURATION - UPDATE THESE!
         // =============================================
-
-        // Configuration
-        const SUPABASE_URL = 'https://https://asvvxbrngudgerkxzwrn.supabase.co'; // REPLACE
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFzdnZ4YnJuZ3VkZ2Vya3h6d3JuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEwOTgzMzQsImV4cCI6MjA4NjY3NDMzNH0.MLo5dQs4-jGcc5OZAN1NtGX1BKdkqxSX-FsFxxexQXw'; // REPLACE
-        
-        // VAPID Public Key (from Supabase)
+        const SUPABASE_URL = 'https://asvvxbrngudgerkxzwrn.supabase.co'; // REPLACE WITH YOUR URL
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFzdnZ4YnJuZ3VkZ2Vya3h6d3JuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEwOTgzMzQsImV4cCI6MjA4NjY3NDMzNH0.MLo5dQs4-jGcc5OZAN1NtGX1BKdkqxSX-FsFxxexQXw'; // REPLACE WITH YOUR KEY
         const VAPID_PUBLIC_KEY = 'BGeZRzV9yXq8QgYq8QgYq8QgYq8QgYq8QgYq8QgYq8QgYq8QgYq8QgYq8QgYq8QgYq8QgYq8QgYq8QgYq8QgYq8Q';
 
         // =============================================
@@ -334,35 +376,28 @@
             try {
                 const data = event.data.json();
                 
-                // Determine sound based on severity
-                let soundFile = '';
-                let vibration = [200, 100, 200];
                 let title = '📢 INFO';
+                let vibration = [200, 100, 200];
+                let sound = 'https://www.soundjay.com/misc/sounds/bell-ringing-01.mp3';
+                let icon = 'https://cdn-icons-png.flaticon.com/512/893/893257.png';
                 
-                switch(data.severity) {
-                    case 'critical':
-                        soundFile = 'https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3';
-                        vibration = [500, 200, 500, 200, 500];
-                        title = '🚨 CRITICAL ALERT';
-                        break;
-                    case 'warning':
-                        soundFile = 'https://www.soundjay.com/misc/sounds/bell-ringing-04.mp3';
-                        vibration = [300, 100, 300];
-                        title = '⚠️ WARNING';
-                        break;
-                    default:
-                        soundFile = 'https://www.soundjay.com/misc/sounds/bell-ringing-01.mp3';
-                        vibration = [200, 100, 200];
-                        title = '📢 INFO';
+                if (data.severity === 'critical') {
+                    title = '🚨 CRITICAL ALERT';
+                    vibration = [500, 200, 500, 200, 500];
+                    sound = 'https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3';
+                } else if (data.severity === 'warning') {
+                    title = '⚠️ WARNING';
+                    vibration = [300, 100, 300];
+                    sound = 'https://www.soundjay.com/misc/sounds/bell-ringing-04.mp3';
                 }
 
                 const options = {
                     body: data.message,
-                    icon: 'https://cdn-icons-png.flaticon.com/512/893/893257.png',
-                    badge: 'https://cdn-icons-png.flaticon.com/512/893/893257.png',
+                    icon: icon,
+                    badge: icon,
                     vibrate: vibration,
-                    sound: soundFile,
-                    data: { url: '/', id: data.id, severity: data.severity },
+                    sound: sound,
+                    data: { url: '/', severity: data.severity, id: data.id },
                     actions: [
                         { action: 'open', title: 'View Alert' },
                         { action: 'close', title: 'Dismiss' }
@@ -401,23 +436,19 @@
         // =============================================
         // APP STATE
         // =============================================
-        let selectedSeverity = 'critical';
         let swRegistration = null;
-        let deferredPrompt = null;
-        
-        // Mock alerts
-        let alerts = [
-            { id: '1', message: '🚨 Test critical alert', severity: 'critical', sender: 'system', created_at: new Date().toISOString() }
-        ];
+        let selectedSeverity = 'critical';
+        let alerts = [];
 
         // =============================================
         // INITIALIZATION
         // =============================================
         window.addEventListener('load', async () => {
+            updateStatus('checking', 'Setting up...');
             await setupServiceWorker();
-            await checkNotificationPermission();
+            await fetchAlerts();
             setupEventListeners();
-            renderAlerts();
+            checkInstallPrompt();
         });
 
         // =============================================
@@ -431,58 +462,53 @@
                     swRegistration = await navigator.serviceWorker.register(url, { scope: '/' });
                     console.log('✅ Service Worker registered');
                     
-                    // Wait for activation
-                    await navigator.serviceWorker.ready;
-                    
-                    // Request permission and subscribe
-                    await subscribeToPush();
-                    
+                    await requestNotificationPermission();
                 } catch (error) {
                     console.error('Service Worker failed:', error);
-                    updateNotificationStatus('error', 'Service Worker failed');
+                    updateStatus('warning', 'Service Worker failed');
                 }
+            } else {
+                updateStatus('warning', 'Service Worker not supported');
             }
         }
 
-        // =============================================
-        // PUSH SUBSCRIPTION
-        // =============================================
+        async function requestNotificationPermission() {
+            if (!('Notification' in window)) {
+                updateStatus('warning', 'Notifications not supported');
+                return;
+            }
+            
+            const permission = await Notification.requestPermission();
+            
+            if (permission === 'granted') {
+                updateStatus('active', 'Notifications active');
+                await subscribeToPush();
+            } else {
+                updateStatus('warning', 'Notifications blocked');
+            }
+        }
+
         async function subscribeToPush() {
             try {
-                // Request permission
-                const permission = await Notification.requestPermission();
+                if (!swRegistration) return;
                 
-                if (permission === 'granted') {
-                    // Get subscription
-                    const subscription = await swRegistration.pushManager.subscribe({
-                        userVisibleOnly: true,
-                        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
-                    });
-                    
-                    console.log('✅ Push subscription created');
-                    
-                    // Save to Supabase
-                    await saveSubscription(subscription);
-                    
-                    updateNotificationStatus('active', 'Notifications active');
-                    
-                    // Test subscription
-                    await testPushSubscription();
-                } else {
-                    updateNotificationStatus('warning', 'Notifications blocked');
-                }
+                const subscription = await swRegistration.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+                });
+                
+                console.log('✅ Push subscription created');
+                
+                // Save to Supabase
+                await saveSubscription(subscription);
             } catch (error) {
-                console.error('Subscription failed:', error);
-                updateNotificationStatus('warning', 'Push subscription failed');
+                console.error('Push subscription failed:', error);
             }
         }
 
-        // =============================================
-        // SAVE SUBSCRIPTION TO SUPABASE
-        // =============================================
         async function saveSubscription(subscription) {
             try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/device_tokens`, {
+                await fetch(`${SUPABASE_URL}/rest/v1/device_tokens`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -496,71 +522,80 @@
                         last_active: new Date().toISOString()
                     })
                 });
-                
-                console.log('Subscription saved to server');
+                console.log('✅ Subscription saved to server');
             } catch (error) {
                 console.log('Failed to save subscription:', error);
             }
         }
 
         // =============================================
-        // TEST PUSH NOTIFICATION
+        // SUPABASE OPERATIONS
         // =============================================
-        async function testPushSubscription() {
+        async function fetchAlerts() {
             try {
-                // Simulate a push notification
-                if (swRegistration) {
-                    await swRegistration.showNotification('🔔 Test Notification', {
-                        body: 'If you see this, push is working!',
-                        icon: 'https://cdn-icons-png.flaticon.com/512/893/893257.png',
-                        vibrate: [200, 100, 200],
-                        requireInteraction: true
-                    });
-                }
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/alerts?order=created_at.desc`, {
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    }
+                });
+                
+                if (!response.ok) throw new Error('Failed to fetch');
+                
+                alerts = await response.json();
+                renderAlerts();
             } catch (error) {
-                console.log('Test notification failed:', error);
+                console.log('Using mock data');
+                alerts = [
+                    { 
+                        id: '1', 
+                        message: 'Welcome to InformaCast Pro! Send your first alert.', 
+                        severity: 'info', 
+                        sender: 'system', 
+                        created_at: new Date().toISOString() 
+                    }
+                ];
+                renderAlerts();
             }
         }
 
-        // =============================================
-        // UTILITIES
-        // =============================================
-        function urlBase64ToUint8Array(base64String) {
-            const padding = '='.repeat((4 - base64String.length % 4) % 4);
-            const base64 = (base64String + padding)
-                .replace(/\-/g, '+')
-                .replace(/_/g, '/');
-            const rawData = window.atob(base64);
-            const outputArray = new Uint8Array(rawData.length);
-            for (let i = 0; i < rawData.length; ++i) {
-                outputArray[i] = rawData.charCodeAt(i);
-            }
-            return outputArray;
-        }
-
-        function updateNotificationStatus(status, message) {
-            const dot = document.getElementById('statusDot');
-            const text = document.getElementById('statusText');
-            
-            dot.className = 'dot';
-            if (status === 'warning') {
-                dot.classList.add('warning');
-            }
-            text.textContent = message;
-        }
-
-        async function checkNotificationPermission() {
-            if (!('Notification' in window)) {
-                updateNotificationStatus('warning', 'Notifications not supported');
-                return;
-            }
-            
-            if (Notification.permission === 'granted') {
-                updateNotificationStatus('active', 'Notifications active');
-            } else if (Notification.permission === 'denied') {
-                updateNotificationStatus('warning', 'Notifications blocked');
-            } else {
-                updateNotificationStatus('warning', 'Click allow for notifications');
+        async function sendAlert(message, severity) {
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/alerts`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        severity: severity,
+                        sender: 'web-user'
+                    })
+                });
+                
+                if (!response.ok) throw new Error('Failed to send');
+                
+                // Show local notification
+                if (swRegistration) {
+                    await swRegistration.showNotification(
+                        severity === 'critical' ? '🚨 CRITICAL' : 
+                        severity === 'warning' ? '⚠️ WARNING' : '📢 INFO',
+                        {
+                            body: message,
+                            icon: 'https://cdn-icons-png.flaticon.com/512/893/893257.png',
+                            vibrate: severity === 'critical' ? [500,200,500] : [200,100,200],
+                            requireInteraction: true
+                        }
+                    );
+                }
+                
+                await fetchAlerts();
+                showToast('✅ Alert sent with push notification!');
+            } catch (error) {
+                console.log('Send failed:', error);
+                showToast('❌ Failed to send alert');
             }
         }
 
@@ -570,7 +605,7 @@
         function renderAlerts() {
             const feed = document.getElementById('alertFeed');
             
-            if (alerts.length === 0) {
+            if (!alerts || alerts.length === 0) {
                 feed.innerHTML = '<div style="text-align: center; padding: 40px; color: rgba(255,255,255,0.5);">No alerts</div>';
                 return;
             }
@@ -595,10 +630,74 @@
             `).join('');
         }
 
+        function updateStatus(status, message) {
+            const dot = document.getElementById('statusDot');
+            const text = document.getElementById('statusText');
+            
+            dot.className = 'dot';
+            if (status === 'warning') {
+                dot.classList.add('warning');
+            }
+            text.textContent = message;
+        }
+
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: #ffd700;
+                color: #0a2e42;
+                padding: 16px 28px;
+                border-radius: 50px;
+                font-weight: bold;
+                z-index: 9999;
+                animation: slideUp 0.3s;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'fadeOut 0.3s';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
         function escapeHtml(text) {
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
+        }
+
+        function urlBase64ToUint8Array(base64String) {
+            const padding = '='.repeat((4 - base64String.length % 4) % 4);
+            const base64 = (base64String + padding)
+                .replace(/\-/g, '+')
+                .replace(/_/g, '/');
+            const rawData = window.atob(base64);
+            const outputArray = new Uint8Array(rawData.length);
+            for (let i = 0; i < rawData.length; ++i) {
+                outputArray[i] = rawData.charCodeAt(i);
+            }
+            return outputArray;
+        }
+
+        function checkInstallPrompt() {
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                document.getElementById('installPWA').classList.remove('hidden');
+                document.getElementById('installPWA').onclick = () => {
+                    e.prompt();
+                    document.getElementById('installPWA').classList.add('hidden');
+                };
+            });
+
+            if (window.matchMedia('(display-mode: standalone)').matches) {
+                document.getElementById('installPWA').classList.add('hidden');
+            }
         }
 
         function setupEventListeners() {
@@ -611,76 +710,43 @@
                 });
             });
 
-            // Publish alert
+            // Publish button
             document.getElementById('publishAlertBtn').addEventListener('click', () => {
-                const message = document.getElementById('alertMessage').value;
-                if (!message.trim()) {
-                    alert('Please enter a message');
-                    return;
+                const message = document.getElementById('alertMessage').value.trim();
+                if (message) {
+                    sendAlert(message, selectedSeverity);
+                    document.getElementById('alertMessage').value = '';
+                } else {
+                    showToast('⚠️ Please enter an alert message');
                 }
-                
-                const newAlert = {
-                    id: Date.now().toString(),
-                    message: message,
-                    severity: selectedSeverity,
-                    sender: 'web-user',
-                    created_at: new Date().toISOString()
-                };
-                
-                alerts.unshift(newAlert);
-                renderAlerts();
-                document.getElementById('alertMessage').value = '';
-                
-                // Show local notification
+            });
+
+            // Refresh button
+            document.getElementById('refreshBtn').addEventListener('click', fetchAlerts);
+
+            // Test button
+            document.getElementById('testNotificationBtn').addEventListener('click', async () => {
                 if (swRegistration) {
-                    swRegistration.showNotification(
-                        selectedSeverity === 'critical' ? '🚨 CRITICAL' : 
-                        selectedSeverity === 'warning' ? '⚠️ WARNING' : '📢 INFO',
-                        {
-                            body: message,
-                            icon: 'https://cdn-icons-png.flaticon.com/512/893/893257.png',
-                            vibrate: selectedSeverity === 'critical' ? [500,200,500] : [200,100,200],
-                            tag: 'alert-' + newAlert.id,
-                            requireInteraction: true
-                        }
-                    );
+                    await swRegistration.showNotification('🔔 Test Notification', {
+                        body: 'Push notifications are working!',
+                        icon: 'https://cdn-icons-png.flaticon.com/512/893/893257.png',
+                        vibrate: [200, 100, 200],
+                        requireInteraction: true
+                    });
+                    showToast('✅ Test notification sent');
+                } else {
+                    showToast('❌ Service Worker not ready');
                 }
             });
 
-            // Refresh
-            document.getElementById('refreshBtn').addEventListener('click', renderAlerts);
-
-            // Test notification
-            document.getElementById('testNotificationBtn').addEventListener('click', testPushSubscription);
-
-            // PWA install
-            window.addEventListener('beforeinstallprompt', (e) => {
-                e.preventDefault();
-                deferredPrompt = e;
-                document.getElementById('installPWA').classList.remove('hidden');
+            // Enter key to send
+            document.getElementById('alertMessage').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    document.getElementById('publishAlertBtn').click();
+                }
             });
-
-            document.getElementById('installPWA').addEventListener('click', async () => {
-                if (!deferredPrompt) return;
-                deferredPrompt.prompt();
-                await deferredPrompt.userChoice;
-                deferredPrompt = null;
-                document.getElementById('installPWA').classList.add('hidden');
-            });
-
-            // Hide install if already installed
-            if (window.matchMedia('(display-mode: standalone)').matches) {
-                document.getElementById('installPWA').classList.add('hidden');
-            }
         }
-
-        // Initialize on load
-        window.addEventListener('load', () => {
-            setupServiceWorker();
-            checkNotificationPermission();
-            setupEventListeners();
-            renderAlerts();
-        });
     </script>
 </body>
 </html>
