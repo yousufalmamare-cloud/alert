@@ -3,7 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>InformaCast Pro - Real Push Alerts</title>
+    <title>InformaCast Pro - Critical Alert System</title>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22InformaCast%20Pro%22%2C%22short_name%22%3A%22InformaCast%22%2C%22start_url%22%3A%22%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230a2e42%22%2C%22theme_color%22%3A%22%230a5c8c%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22https%3A%2F%2Fcdn-icons-png.flaticon.com%2F512%2F893%2F893257.png%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%7D%5D%7D">
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0a5c8c">
+    
     <style>
         * {
             margin: 0;
@@ -12,34 +20,37 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             background: linear-gradient(145deg, #0a2e42 0%, #0c384f 100%);
+            color: white;
             min-height: 100vh;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            align-items: center;
             padding: 16px;
         }
 
         .container {
             max-width: 800px;
             width: 100%;
-            margin: 20px auto;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+            border-radius: 40px;
+            padding: 28px 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin: 20px 0;
         }
 
         .header {
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 30px;
-            padding: 30px;
-            margin-bottom: 20px;
-            border: 1px solid rgba(255,255,255,0.2);
             text-align: center;
+            margin-bottom: 30px;
         }
 
         .header h1 {
-            color: white;
             font-size: 2.5em;
             margin-bottom: 10px;
+            color: #ffd700;
+            text-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);
         }
 
         .header p {
@@ -47,29 +58,73 @@
             font-size: 1.1em;
         }
 
-        .alert-creator {
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(10px);
+        .status-bar {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 50px;
+            padding: 15px 20px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #4caf50;
+            box-shadow: 0 0 10px #4caf50;
+            animation: pulse 2s infinite;
+        }
+
+        .dot.warning {
+            background: #ffaa33;
+            box-shadow: 0 0 10px #ffaa33;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.2); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .install-btn {
+            background: #ffd700;
+            color: #0a2e42;
+            border: none;
             border-radius: 30px;
-            padding: 30px;
-            margin-bottom: 20px;
-            border: 1px solid rgba(255,255,255,0.2);
+            padding: 15px 25px;
+            font-weight: bold;
+            font-size: 1.1em;
+            cursor: pointer;
+            width: 100%;
+            margin: 15px 0;
+            transition: transform 0.2s;
+        }
+
+        .install-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .alert-creator {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
+            padding: 25px;
+            margin: 25px 0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         textarea {
             width: 100%;
-            padding: 20px;
-            border: 2px solid rgba(255,255,255,0.2);
+            padding: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
             border-radius: 20px;
-            font-size: 16px;
-            background: rgba(0,0,0,0.3);
+            background: rgba(0, 0, 0, 0.3);
             color: white;
+            font-size: 16px;
             margin-bottom: 20px;
             resize: vertical;
-        }
-
-        textarea::placeholder {
-            color: rgba(255,255,255,0.5);
         }
 
         textarea:focus {
@@ -79,172 +134,133 @@
 
         .severity-selector {
             display: flex;
-            gap: 15px;
-            margin-bottom: 25px;
+            gap: 12px;
+            margin-bottom: 20px;
             flex-wrap: wrap;
         }
 
         .severity-btn {
             flex: 1;
-            min-width: 120px;
-            padding: 18px;
+            min-width: 100px;
+            padding: 15px;
             border: none;
-            border-radius: 50px;
-            font-weight: 700;
-            font-size: 1.1em;
+            border-radius: 30px;
+            font-weight: bold;
             cursor: pointer;
             transition: all 0.3s;
-            border: 2px solid transparent;
+            opacity: 0.7;
         }
 
-        .severity-btn.critical {
-            background: rgba(255,68,68,0.2);
-            color: #ff8888;
-            border-color: #ff4444;
+        .severity-btn.active {
+            opacity: 1;
+            transform: scale(1.02);
+            box-shadow: 0 0 20px currentColor;
         }
 
-        .severity-btn.critical.active {
+        .critical-btn {
             background: #ff4444;
             color: white;
-            transform: scale(1.02);
-            box-shadow: 0 0 20px #ff4444;
         }
 
-        .severity-btn.warning {
-            background: rgba(255,170,51,0.2);
-            color: #ffbb55;
-            border-color: #ffaa33;
-        }
-
-        .severity-btn.warning.active {
+        .warning-btn {
             background: #ffaa33;
             color: #0a2e42;
-            transform: scale(1.02);
-            box-shadow: 0 0 20px #ffaa33;
         }
 
-        .severity-btn.info {
-            background: rgba(76,175,80,0.2);
-            color: #88cc88;
-            border-color: #4caf50;
-        }
-
-        .severity-btn.info.active {
+        .info-btn {
             background: #4caf50;
             color: white;
-            transform: scale(1.02);
-            box-shadow: 0 0 20px #4caf50;
         }
 
         .send-btn {
             width: 100%;
-            padding: 20px;
+            padding: 18px;
             background: linear-gradient(145deg, #ffd700, #ffb300);
             border: none;
             border-radius: 50px;
             color: #0a2e42;
-            font-weight: 800;
-            font-size: 1.3em;
+            font-weight: bold;
+            font-size: 1.2em;
             cursor: pointer;
             transition: all 0.3s;
-            border-bottom: 4px solid #c28f00;
         }
 
         .send-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(255,215,0,0.3);
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4);
         }
 
-        .alerts-list {
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 30px;
-            padding: 30px;
-            border: 1px solid rgba(255,255,255,0.2);
+        .alerts-section {
+            margin-top: 30px;
         }
 
-        .alerts-list h3 {
-            color: white;
+        .alerts-section h3 {
             margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .alert-card {
-            background: rgba(255,255,255,0.05);
+            background: rgba(255, 255, 255, 0.1);
             border-left: 5px solid;
-            padding: 20px;
-            margin-bottom: 15px;
+            padding: 18px;
+            margin-bottom: 12px;
             border-radius: 15px;
-            color: white;
+            transition: transform 0.2s;
         }
 
-        .alert-card.critical { border-left-color: #ff4444; }
-        .alert-card.warning { border-left-color: #ffaa33; }
-        .alert-card.info { border-left-color: #4caf50; }
+        .alert-card:hover {
+            transform: translateX(5px);
+        }
 
         .alert-header {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         .alert-severity {
-            font-weight: 700;
-            text-transform: uppercase;
+            font-weight: bold;
         }
 
         .alert-time {
-            color: rgba(255,255,255,0.5);
+            color: rgba(255, 255, 255, 0.5);
             font-size: 0.9em;
         }
 
         .alert-message {
             font-size: 1.1em;
-            margin-bottom: 8px;
+            margin: 8px 0;
         }
 
         .alert-sender {
-            color: rgba(255,255,255,0.5);
+            color: rgba(255, 255, 255, 0.5);
             font-size: 0.9em;
         }
 
-        .status {
-            text-align: center;
-            padding: 15px;
-            margin: 20px 0;
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ffd700;
+            color: #0a2e42;
+            padding: 15px 30px;
             border-radius: 50px;
+            font-weight: bold;
+            z-index: 9999;
+            animation: slideUp 0.3s;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes slideUp {
+            from { transform: translate(-50%, 100%); opacity: 0; }
+            to { transform: translate(-50%, 0); opacity: 1; }
+        }
+
+        .hidden {
             display: none;
-        }
-
-        .status.success {
-            background: rgba(76,175,80,0.2);
-            color: #88cc88;
-            border: 1px solid #4caf50;
-            display: block;
-        }
-
-        .status.error {
-            background: rgba(255,68,68,0.2);
-            color: #ff8888;
-            border: 1px solid #ff4444;
-            display: block;
-        }
-
-        .setup-instructions {
-            background: rgba(0,0,0,0.3);
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 20px;
-            color: white;
-        }
-
-        .setup-instructions ol {
-            margin-left: 20px;
-            margin-top: 10px;
-        }
-
-        .setup-instructions li {
-            margin-bottom: 8px;
-            color: #b0d4e8;
         }
     </style>
 </head>
@@ -252,42 +268,42 @@
     <div class="container">
         <div class="header">
             <h1>🚨 InformaCast Pro</h1>
-            <p>Send push notifications that ring your phone even when app is closed</p>
+            <p>Critical Alert & Notification System</p>
         </div>
 
-        <!-- Setup Instructions (shown initially) -->
-        <div class="setup-instructions" id="setupInstructions">
-            <h3>📱 Quick Setup:</h3>
-            <ol>
-                <li>1. Install "WirePusher" from Google Play Store on your phone</li>
-                <li>2. Open WirePusher and copy your Device ID</li>
-                <li>3. Update the SQL with your Device ID</li>
-                <li>4. Run the SQL in Supabase</li>
-                <li>5. Update SUPABASE_URL and SUPABASE_ANON_KEY below</li>
-            </ol>
-            <p style="margin-top: 10px; color: #ffd700;">After setup, alerts will ring your phone immediately!</p>
+        <div class="status-bar" id="statusBar">
+            <span class="dot" id="statusDot"></span>
+            <span id="statusText">Checking notification permissions...</span>
         </div>
 
-        <div id="status" class="status"></div>
+        <button id="installBtn" class="install-btn hidden">
+            📲 Install App on Home Screen
+        </button>
 
         <div class="alert-creator">
-            <textarea id="message" placeholder="Enter your alert message..." rows="3">Test alert - This should ring my phone!</textarea>
+            <h3 style="margin-bottom: 15px;">📢 Create New Alert</h3>
+            <textarea id="messageInput" placeholder="Enter alert message..." rows="3"></textarea>
             
-            <div class="severity-selector">
-                <button class="severity-btn critical active" onclick="setSeverity('critical')">🔴 CRITICAL</button>
-                <button class="severity-btn warning" onclick="setSeverity('warning')">🟠 WARNING</button>
-                <button class="severity-btn info" onclick="setSeverity('info')">🔵 INFO</button>
+            <div class="severity-selector" id="severitySelector">
+                <button class="severity-btn critical-btn active" data-severity="critical">🔴 CRITICAL</button>
+                <button class="severity-btn warning-btn" data-severity="warning">🟠 WARNING</button>
+                <button class="severity-btn info-btn" data-severity="info">🔵 INFO</button>
             </div>
-            
-            <button class="send-btn" onclick="sendAlert()">
-                📢 SEND ALERT (Phone will ring!)
+
+            <button id="sendBtn" class="send-btn">
+                📢 SEND PUSH ALERT
             </button>
         </div>
 
-        <div class="alerts-list">
-            <h3>📋 Recent Alerts</h3>
+        <div class="alerts-section">
+            <h3>
+                <span>📋 Recent Alerts</span>
+                <button id="refreshBtn" style="background: none; border: none; color: white; cursor: pointer;">
+                    🔄
+                </button>
+            </h3>
             <div id="alertsList">
-                <div style="text-align: center; color: rgba(255,255,255,0.5); padding: 20px;">
+                <div style="text-align: center; padding: 20px; color: rgba(255,255,255,0.5);">
                     <i class="fas fa-circle-notch fa-spin"></i> Loading alerts...
                 </div>
             </div>
@@ -296,31 +312,179 @@
 
     <script>
         // =============================================
-        // CONFIGURATION - UPDATE THESE WITH YOUR VALUES
+        // CONFIGURATION - UPDATE WITH YOUR SUPABASE INFO
         // =============================================
-        const SUPABASE_URL = 'https://zwhbpqhrlkxhgrhmgyvx.supabase.co';  // Replace with your URL
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp3aGJwcWhybGt4aGdyaG1neXZ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEwODUzMDUsImV4cCI6MjA4NjY2MTMwNX0.jPcxT1wZMCbPFQkK4qWhLfQkO8MtvVPlyga1i2cto6o';                 // Replace with your key
-        
+        const SUPABASE_URL = 'https://zwhbpqhrlkxhgrhmgyvx.supabase.co'; // REPLACE THIS
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp3aGJwcWhybGt4aGdyaG1neXZ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEwODUzMDUsImV4cCI6MjA4NjY2MTMwNX0.jPcxT1wZMCbPFQkK4qWhLfQkO8MtvVPlyga1i2cto6o'; // REPLACE THIS
+
+        // =============================================
+        // SERVICE WORKER FOR PUSH NOTIFICATIONS
+        // =============================================
+        const swCode = `
+        self.addEventListener('install', (event) => {
+            self.skipWaiting();
+        });
+
+        self.addEventListener('activate', (event) => {
+            event.waitUntil(clients.claim());
+        });
+
+        self.addEventListener('push', (event) => {
+            if (!event.data) return;
+            
+            const data = event.data.json();
+            
+            let title = '📢 INFO';
+            let vibration = [200, 100, 200];
+            
+            if (data.severity === 'critical') {
+                title = '🚨 CRITICAL ALERT';
+                vibration = [500, 200, 500, 200, 500];
+            } else if (data.severity === 'warning') {
+                title = '⚠️ WARNING';
+                vibration = [300, 100, 300];
+            }
+
+            const options = {
+                body: data.message,
+                icon: 'https://cdn-icons-png.flaticon.com/512/893/893257.png',
+                badge: 'https://cdn-icons-png.flaticon.com/512/893/893257.png',
+                vibrate: vibration,
+                data: { url: '/' },
+                requireInteraction: true,
+                silent: false
+            };
+
+            event.waitUntil(
+                self.registration.showNotification(title, options)
+            );
+        });
+
+        self.addEventListener('notificationclick', (event) => {
+            event.notification.close();
+            event.waitUntil(
+                clients.openWindow('/')
+            );
+        });
+        `;
+
         // =============================================
         // APP STATE
         // =============================================
         let currentSeverity = 'critical';
-        
-        function setSeverity(severity) {
-            currentSeverity = severity;
-            document.querySelectorAll('.severity-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            document.querySelector(`.severity-btn.${severity}`).classList.add('active');
+        let swRegistration = null;
+
+        // =============================================
+        // INITIALIZATION
+        // =============================================
+        window.addEventListener('load', async () => {
+            await setupServiceWorker();
+            await loadAlerts();
+            setupEventListeners();
+            checkInstallPrompt();
+        });
+
+        async function setupServiceWorker() {
+            if ('serviceWorker' in navigator) {
+                try {
+                    const blob = new Blob([swCode], { type: 'application/javascript' });
+                    const url = URL.createObjectURL(blob);
+                    swRegistration = await navigator.serviceWorker.register(url, { scope: '/' });
+                    
+                    const permission = await Notification.requestPermission();
+                    if (permission === 'granted') {
+                        updateStatus('active', 'Notifications active - Alerts will ring your phone!');
+                    } else {
+                        updateStatus('warning', 'Notifications blocked - Please enable in settings');
+                    }
+                } catch (error) {
+                    updateStatus('warning', 'Push notifications unavailable');
+                }
+            }
         }
-        
-        async function sendAlert() {
-            const message = document.getElementById('message').value.trim();
-            if (!message) {
-                showStatus('Please enter a message', 'error');
+
+        function updateStatus(type, message) {
+            const dot = document.getElementById('statusDot');
+            const text = document.getElementById('statusText');
+            
+            dot.className = 'dot' + (type === 'warning' ? ' warning' : '');
+            text.textContent = message;
+        }
+
+        async function loadAlerts() {
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/alerts?order=created_at.desc&limit=20`, {
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    }
+                });
+                
+                if (!response.ok) throw new Error('Failed to fetch');
+                
+                const alerts = await response.json();
+                displayAlerts(alerts);
+            } catch (error) {
+                // Show demo data if Supabase not configured
+                displayAlerts([
+                    {
+                        id: '1',
+                        message: 'Welcome to InformaCast Pro! Update SUPABASE_URL and SUPABASE_ANON_KEY in the code to connect to your database.',
+                        severity: 'info',
+                        sender: 'system',
+                        created_at: new Date().toISOString()
+                    },
+                    {
+                        id: '2',
+                        message: 'Click the CRITICAL button and send a test alert to see push notifications in action!',
+                        severity: 'critical',
+                        sender: 'system',
+                        created_at: new Date(Date.now() - 60000).toISOString()
+                    }
+                ]);
+            }
+        }
+
+        function displayAlerts(alerts) {
+            const list = document.getElementById('alertsList');
+            
+            if (!alerts || alerts.length === 0) {
+                list.innerHTML = '<p style="text-align: center; padding: 20px;">No alerts yet</p>';
                 return;
             }
             
+            let html = '';
+            alerts.forEach(alert => {
+                const time = new Date(alert.created_at).toLocaleTimeString([], { 
+                    hour: '2-digit', 
+                    minute: '2-digit',
+                    hour12: true 
+                });
+                
+                const color = alert.severity === 'critical' ? '#ff4444' : 
+                             alert.severity === 'warning' ? '#ffaa33' : '#4caf50';
+                
+                html += `
+                    <div class="alert-card" style="border-left-color: ${color}">
+                        <div class="alert-header">
+                            <span class="alert-severity" style="color: ${color}">${alert.severity.toUpperCase()}</span>
+                            <span class="alert-time">${time}</span>
+                        </div>
+                        <div class="alert-message">${escapeHtml(alert.message)}</div>
+                        <div class="alert-sender">From: ${escapeHtml(alert.sender)}</div>
+                    </div>
+                `;
+            });
+            list.innerHTML = html;
+        }
+
+        async function sendAlert() {
+            const message = document.getElementById('messageInput').value.trim();
+            if (!message) {
+                showToast('⚠️ Please enter a message');
+                return;
+            }
+
             try {
                 const response = await fetch(`${SUPABASE_URL}/rest/v1/alerts`, {
                     method: 'POST',
@@ -335,89 +499,98 @@
                         sender: 'web-user'
                     })
                 });
-                
-                if (!response.ok) {
-                    const error = await response.text();
-                    throw new Error(error);
+
+                if (!response.ok) throw new Error('Failed to send');
+
+                // Show local notification
+                if (swRegistration && Notification.permission === 'granted') {
+                    await swRegistration.showNotification(
+                        currentSeverity === 'critical' ? '🚨 CRITICAL' : 
+                        currentSeverity === 'warning' ? '⚠️ WARNING' : '📢 INFO',
+                        {
+                            body: message,
+                            icon: 'https://cdn-icons-png.flaticon.com/512/893/893257.png',
+                            vibrate: currentSeverity === 'critical' ? [500,200,500] : [200,100,200],
+                            requireInteraction: true
+                        }
+                    );
                 }
-                
-                showStatus('✅ Alert sent! Your phone will ring immediately!', 'success');
-                document.getElementById('message').value = '';
-                loadAlerts();
-                
-            } catch (error) {
-                console.error('Error:', error);
-                showStatus('❌ Error sending alert. Check Supabase configuration.', 'error');
-            }
-        }
-        
-        async function loadAlerts() {
-            try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/alerts?order=created_at.desc&limit=10`, {
-                    headers: {
-                        'apikey': SUPABASE_ANON_KEY,
-                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-                    }
-                });
-                
-                if (!response.ok) return;
-                
-                const alerts = await response.json();
-                displayAlerts(alerts);
+
+                document.getElementById('messageInput').value = '';
+                await loadAlerts();
+                showToast('✅ Alert sent!');
                 
             } catch (error) {
-                console.error('Error loading alerts:', error);
+                console.error('Send error:', error);
+                showToast('❌ Failed to send. Check Supabase configuration.');
             }
         }
-        
-        function displayAlerts(alerts) {
-            const list = document.getElementById('alertsList');
+
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
             
-            if (!alerts || alerts.length === 0) {
-                list.innerHTML = '<p style="text-align: center; color: rgba(255,255,255,0.5);">No alerts yet</p>';
-                return;
-            }
-            
-            let html = '';
-            alerts.forEach(alert => {
-                const time = new Date(alert.created_at).toLocaleTimeString();
-                html += `
-                    <div class="alert-card ${alert.severity}">
-                        <div class="alert-header">
-                            <span class="alert-severity">${alert.severity.toUpperCase()}</span>
-                            <span class="alert-time">${time}</span>
-                        </div>
-                        <div class="alert-message">${escapeHtml(alert.message)}</div>
-                        <div class="alert-sender">From: ${escapeHtml(alert.sender)}</div>
-                    </div>
-                `;
-            });
-            list.innerHTML = html;
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
         }
-        
+
         function escapeHtml(text) {
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
         }
-        
-        function showStatus(message, type) {
-            const status = document.getElementById('status');
-            status.className = `status ${type}`;
-            status.textContent = message;
-            setTimeout(() => {
-                status.className = 'status';
-            }, 5000);
+
+        function setupEventListeners() {
+            // Severity selector
+            document.querySelectorAll('.severity-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.severity-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentSeverity = btn.dataset.severity;
+                });
+            });
+
+            // Send button
+            document.getElementById('sendBtn').addEventListener('click', sendAlert);
+
+            // Refresh button
+            document.getElementById('refreshBtn').addEventListener('click', loadAlerts);
+
+            // Enter key in textarea
+            document.getElementById('messageInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendAlert();
+                }
+            });
         }
-        
-        // Load alerts on page load and every 10 seconds
-        loadAlerts();
+
+        function checkInstallPrompt() {
+            // PWA install prompt
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                const installBtn = document.getElementById('installBtn');
+                installBtn.classList.remove('hidden');
+                installBtn.onclick = async () => {
+                    e.prompt();
+                    const { outcome } = await e.userChoice;
+                    if (outcome === 'accepted') {
+                        installBtn.classList.add('hidden');
+                    }
+                };
+            });
+
+            // Hide install button if already installed
+            if (window.matchMedia('(display-mode: standalone)').matches) {
+                document.getElementById('installBtn').classList.add('hidden');
+            }
+        }
+
+        // Auto-refresh alerts every 10 seconds
         setInterval(loadAlerts, 10000);
-        
-        // Hide setup instructions after 30 seconds
-        setTimeout(() => {
-            document.getElementById('setupInstructions').style.display = 'none';
-        }, 30000);
     </script>
 </body>
 </html>
