@@ -5,12 +5,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>InformaCast - Push Notification System</title>
     
-    <!-- PWA Manifest for installation -->
-    <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22InformaCast%22%2C%22short_name%22%3A%22InformaCast%22%2C%22start_url%22%3A%22%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230a2e42%22%2C%22theme_color%22%3A%22%230a5c8c%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22https%3A%2F%2Fcdn-icons-png.flaticon.com%2F512%2F893%2F893257.png%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%7D%5D%7D">
+    <!-- Fixed Manifest - Proper JSON format -->
+    <link rel="manifest" href="manifest.json">
     
+    <!-- Proper meta tags for PWA -->
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#0a5c8c">
+    
+    <!-- Inline fallback manifest if file doesn't exist -->
+    <script>
+        // Create manifest if it doesn't exist
+        if (!window.location.href.includes('manifest.json')) {
+            const manifest = {
+                name: "InformaCast",
+                short_name: "InformaCast",
+                start_url: window.location.href.split('#')[0].split('?')[0],
+                display: "standalone",
+                background_color: "#0a2e42",
+                theme_color: "#0a5c8c",
+                icons: [{
+                    src: "https://cdn-icons-png.flaticon.com/512/893/893257.png",
+                    sizes: "512x512",
+                    type: "image/png"
+                }]
+            };
+            
+            // Create manifest link if needed
+            const manifestLink = document.querySelector('link[rel="manifest"]');
+            if (manifestLink) {
+                manifestLink.href = 'data:application/manifest+json,' + encodeURIComponent(JSON.stringify(manifest));
+            }
+        }
+    </script>
     
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -37,6 +65,31 @@
             text-align: center;
             color: #666;
             margin-bottom: 30px;
+        }
+        .config-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #dc3545;
+        }
+        .config-section input {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-family: monospace;
+        }
+        .config-section button {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
         }
         .status-bar {
             background: #f8f9fa;
@@ -130,7 +183,6 @@
             padding: 15px;
             margin: 10px 0;
             border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         .alert-critical { border-left-color: #dc3545; }
         .alert-warning { border-left-color: #ffc107; }
@@ -145,25 +197,16 @@
             box-shadow: 0 5px 20px rgba(0,0,0,0.2);
             display: none;
             animation: slideIn 0.3s;
+            z-index: 9999;
         }
         @keyframes slideIn {
             from { transform: translateX(100%); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
         }
-        .device-info {
-            background: #e9ecef;
-            border-radius: 8px;
-            padding: 10px;
-            margin-top: 10px;
+        .config-hint {
             font-size: 0.9em;
-            word-break: break-all;
-        }
-        .token-display {
-            background: #dee2e6;
-            padding: 8px;
-            border-radius: 5px;
-            font-family: monospace;
-            font-size: 0.8em;
+            color: #666;
+            margin-top: 5px;
         }
     </style>
 </head>
@@ -172,29 +215,33 @@
         <h1>📢 InformaCast</h1>
         <p class="subtitle">Push Notifications via Supabase + GitHub</p>
 
+        <!-- Configuration Section (visible if not set) -->
+        <div class="config-section" id="configSection">
+            <h3 style="margin-bottom: 10px;">⚙️ Configuration Required</h3>
+            <p>Enter your Supabase credentials:</p>
+            <input type="text" id="configUrl" placeholder="Supabase URL (e.g., https://xyz.supabase.co)" value="">
+            <input type="text" id="configKey" placeholder="Supabase Anon Key" value="">
+            <button id="saveConfigBtn">Save Configuration</button>
+            <div class="config-hint">Find these in Supabase → Project Settings → API</div>
+        </div>
+
         <!-- Status Dashboard -->
         <div class="status-bar" id="statusBar">
             <div class="status-item">
                 <span class="dot" id="supabaseDot"></span>
                 <span>Supabase:</span>
-                <span id="supabaseStatus">Checking connection...</span>
+                <span id="supabaseStatus">Not configured</span>
             </div>
             <div class="status-item">
                 <span class="dot" id="pushDot"></span>
-                <span>Push Service:</span>
-                <span id="pushStatus">Initializing...</span>
+                <span>Notifications:</span>
+                <span id="pushStatus">Checking...</span>
             </div>
             <div class="status-item">
                 <span class="dot" id="deviceDot"></span>
                 <span>Device:</span>
                 <span id="deviceStatus">Detecting...</span>
             </div>
-        </div>
-
-        <!-- Device Token Display (for debugging) -->
-        <div class="device-info" id="deviceInfo" style="display: none;">
-            <strong>📱 Device Token:</strong>
-            <div class="token-display" id="deviceToken"></div>
         </div>
 
         <!-- Alert Form -->
@@ -208,7 +255,7 @@
                 <button class="severity-btn info" data-severity="info">🔵 INFO</button>
             </div>
 
-            <button id="sendBtn" class="send-btn">
+            <button id="sendBtn" class="send-btn" disabled>
                 📢 SEND PUSH NOTIFICATION
             </button>
         </div>
@@ -217,7 +264,7 @@
         <div class="alerts-list">
             <h3 style="margin-bottom: 15px;">Recent Alerts</h3>
             <div id="alertsFeed">
-                <p style="text-align: center; color: #999;">Loading alerts...</p>
+                <p style="text-align: center; color: #999;">Configure Supabase to load alerts</p>
             </div>
         </div>
     </div>
@@ -229,26 +276,65 @@
 
     <script>
         // =============================================
-        // CONFIGURATION - UPDATE WITH YOUR VALUES
+        // CONFIGURATION - LOADED FROM LOCAL STORAGE
         // =============================================
-        const SUPABASE_URL = 'https://zwhbpqhrlkxhgrhmgyvx.supabase.co'; // REPLACE THIS
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp3aGJwcWhybGt4aGdyaG1neXZ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEwODUzMDUsImV4cCI6MjA4NjY2MTMwNX0.jPcxT1wZMCbPFQkK4qWhLfQkO8MtvVPlyga1i2cto6o'; // REPLACE THIS
+        let SUPABASE_URL = localStorage.getItem('https://zwhbpqhrlkxhgrhmgyvx.supabase.co') || '';
+        let SUPABASE_ANON_KEY = localStorage.getItem('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp3aGJwcWhybGt4aGdyaG1neXZ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEwODUzMDUsImV4cCI6MjA4NjY2MTMwNX0.jPcxT1wZMCbPFQkK4qWhLfQkO8MtvVPlyga1i2cto6o') || '';
         
         // =============================================
         // APP STATE
         // =============================================
         let currentSeverity = 'critical';
-        let deviceToken = null;
-        let isSubscribed = false;
+        let isConfigured = false;
+
+        // =============================================
+        // SHOW/HIDE CONFIG SECTION
+        // =============================================
+        function updateConfigDisplay() {
+            const configSection = document.getElementById('configSection');
+            if (SUPABASE_URL && SUPABASE_ANON_KEY) {
+                configSection.style.display = 'none';
+                document.getElementById('sendBtn').disabled = false;
+                isConfigured = true;
+                checkSupabase();
+                loadAlerts();
+            } else {
+                configSection.style.display = 'block';
+                document.getElementById('sendBtn').disabled = true;
+                document.getElementById('supabaseStatus').innerHTML = '❌ Not configured';
+                document.getElementById('supabaseDot').className = 'dot red';
+            }
+        }
+
+        // =============================================
+        // SAVE CONFIGURATION
+        // =============================================
+        document.getElementById('saveConfigBtn').addEventListener('click', () => {
+            const url = document.getElementById('configUrl').value.trim();
+            const key = document.getElementById('configKey').value.trim();
+            
+            if (url && key) {
+                SUPABASE_URL = url;
+                SUPABASE_ANON_KEY = key;
+                localStorage.setItem('supabaseUrl', url);
+                localStorage.setItem('supabaseKey', key);
+                updateConfigDisplay();
+            } else {
+                showToast('Please enter both URL and Key', 'error');
+            }
+        });
 
         // =============================================
         // CHECK SUPABASE CONNECTION
         // =============================================
         async function checkSupabase() {
+            if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return false;
+            
             try {
                 const response = await fetch(`${SUPABASE_URL}/rest/v1/alerts?limit=1`, {
                     headers: {
-                        'apikey': SUPABASE_ANON_KEY
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
                     }
                 });
                 
@@ -256,50 +342,47 @@
                     document.getElementById('supabaseStatus').innerHTML = '✅ Connected';
                     document.getElementById('supabaseDot').className = 'dot green';
                     return true;
+                } else if (response.status === 401) {
+                    document.getElementById('supabaseStatus').innerHTML = '❌ Invalid Key';
+                    document.getElementById('supabaseDot').className = 'dot red';
+                    showToast('Invalid Supabase key', 'error');
+                    return false;
                 } else {
-                    throw new Error('Connection failed');
+                    throw new Error(`HTTP ${response.status}`);
                 }
             } catch (error) {
-                document.getElementById('supabaseStatus').innerHTML = '❌ Failed - Check URL/Key';
+                document.getElementById('supabaseStatus').innerHTML = '❌ Connection Failed';
                 document.getElementById('supabaseDot').className = 'dot red';
                 return false;
             }
         }
 
         // =============================================
-        // REGISTER FOR PUSH NOTIFICATIONS (Web Push API)
+        // CHECK NOTIFICATION PERMISSION
         // =============================================
-        async function registerForPush() {
+        async function checkNotificationPermission() {
             if (!('Notification' in window)) {
                 document.getElementById('pushStatus').innerHTML = '❌ Not supported';
                 document.getElementById('pushDot').className = 'dot red';
                 return;
             }
 
-            try {
-                const permission = await Notification.requestPermission();
+            if (Notification.permission === 'granted') {
+                document.getElementById('pushStatus').innerHTML = '✅ Allowed';
+                document.getElementById('pushDot').className = 'dot green';
+            } else if (Notification.permission === 'denied') {
+                document.getElementById('pushStatus').innerHTML = '❌ Blocked';
+                document.getElementById('pushDot').className = 'dot red';
+            } else {
+                document.getElementById('pushStatus').innerHTML = '⚠️ Click Allow when prompted';
+                document.getElementById('pushDot').className = 'dot yellow';
                 
+                // Request permission
+                const permission = await Notification.requestPermission();
                 if (permission === 'granted') {
                     document.getElementById('pushStatus').innerHTML = '✅ Allowed';
                     document.getElementById('pushDot').className = 'dot green';
-                    
-                    // For iOS PWA, we need to check if installed
-                    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-                    
-                    if (isStandalone) {
-                        document.getElementById('deviceInfo').style.display = 'block';
-                        document.getElementById('deviceToken').textContent = 'PWA Mode - Push Ready';
-                        deviceToken = 'pwa-installed';
-                    }
-                } else if (permission === 'denied') {
-                    document.getElementById('pushStatus').innerHTML = '❌ Blocked';
-                    document.getElementById('pushDot').className = 'dot red';
-                } else {
-                    document.getElementById('pushStatus').innerHTML = '⚠️ Not requested';
-                    document.getElementById('pushDot').className = 'dot yellow';
                 }
-            } catch (error) {
-                console.log('Push registration error:', error);
             }
         }
 
@@ -307,10 +390,13 @@
         // LOAD ALERTS FROM SUPABASE
         // =============================================
         async function loadAlerts() {
+            if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return;
+            
             try {
                 const response = await fetch(`${SUPABASE_URL}/rest/v1/alerts?order=created_at.desc&limit=10`, {
                     headers: {
-                        'apikey': SUPABASE_ANON_KEY
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
                     }
                 });
                 
@@ -370,6 +456,7 @@
                     headers: {
                         'Content-Type': 'application/json',
                         'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
                         'Prefer': 'return=minimal'
                     },
                     body: JSON.stringify({
@@ -379,7 +466,10 @@
                     })
                 });
 
-                if (!response.ok) throw new Error('Failed to send');
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                }
 
                 // Show local notification if permission granted
                 if (Notification.permission === 'granted') {
@@ -388,10 +478,7 @@
                     
                     new Notification(title, {
                         body: message,
-                        icon: 'https://cdn-icons-png.flaticon.com/512/893/893257.png',
-                        badge: 'https://cdn-icons-png.flaticon.com/512/893/893257.png',
-                        tag: 'alert-' + Date.now(),
-                        requireInteraction: true
+                        icon: 'https://cdn-icons-png.flaticon.com/512/893/893257.png'
                     });
                 }
 
@@ -401,7 +488,7 @@
 
             } catch (error) {
                 console.error('Send error:', error);
-                showToast('❌ Failed to send alert', 'error');
+                showToast(`❌ ${error.message}`, 'error');
             } finally {
                 sendBtn.innerHTML = originalText;
                 sendBtn.disabled = false;
@@ -435,10 +522,7 @@
             const ua = navigator.userAgent;
             if (/iPhone|iPad|iPod/i.test(ua)) return '📱 iOS';
             if (/Android/i.test(ua)) return '📱 Android';
-            if (/Windows/i.test(ua)) return '💻 Windows';
-            if (/Mac/i.test(ua)) return '💻 macOS';
-            if (/Linux/i.test(ua)) return '💻 Linux';
-            return '🌐 Web';
+            return '💻 Desktop';
         }
 
         // =============================================
@@ -457,9 +541,13 @@
         document.getElementById('messageInput').addEventListener('keypress', (e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
-                sendAlert();
+                if (isConfigured) sendAlert();
             }
         });
+
+        // Pre-fill config if values exist
+        if (SUPABASE_URL) document.getElementById('configUrl').value = SUPABASE_URL;
+        if (SUPABASE_ANON_KEY) document.getElementById('configKey').value = SUPABASE_ANON_KEY;
 
         // =============================================
         // INITIALIZATION
@@ -469,23 +557,24 @@
             document.getElementById('deviceStatus').innerHTML = getDeviceType();
             document.getElementById('deviceDot').className = 'dot green';
             
-            // Check Supabase connection
-            await checkSupabase();
+            // Update config display
+            updateConfigDisplay();
             
-            // Register for push notifications
-            await registerForPush();
+            // Check notification permission
+            await checkNotificationPermission();
             
-            // Load alerts
-            await loadAlerts();
+            // Load alerts if configured
+            if (SUPABASE_URL && SUPABASE_ANON_KEY) {
+                await loadAlerts();
+            }
             
             // Auto-refresh every 10 seconds
-            setInterval(loadAlerts, 10000);
+            setInterval(() => {
+                if (SUPABASE_URL && SUPABASE_ANON_KEY) {
+                    loadAlerts();
+                }
+            }, 10000);
         });
-
-        // Check if installed as PWA
-        if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
-            console.log('App is installed on home screen');
-        }
     </script>
 </body>
 </html>
