@@ -3,18 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>InformaCast Pro - Critical Alerts</title>
-    
-    <!-- PWA Manifest -->
-    <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22InformaCast%20Pro%22%2C%22short_name%22%3A%22InformaCast%22%2C%22start_url%22%3A%22%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230a2e42%22%2C%22theme_color%22%3A%22%230a5c8c%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22https%3A%2F%2Fcdn-icons-png.flaticon.com%2F512%2F893%2F893257.png%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%2C%22purpose%22%3A%22any%20maskable%22%7D%5D%7D">
-    
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#0a5c8c">
-    
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    
+    <title>InformaCast Pro - Real Push Alerts</title>
     <style>
         * {
             margin: 0;
@@ -23,543 +12,315 @@
         }
 
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
             background: linear-gradient(145deg, #0a2e42 0%, #0c384f 100%);
-            color: white;
             min-height: 100vh;
             display: flex;
-            flex-direction: column;
-            align-items: center;
+            justify-content: center;
             padding: 16px;
         }
 
-        .app-container {
-            max-width: 900px;
+        .container {
+            max-width: 800px;
             width: 100%;
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(12px);
-            border-radius: 40px;
-            padding: 28px 24px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            margin: 20px 0;
+            margin: 20px auto;
         }
 
-        .status-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            padding: 12px 20px;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 100px;
-        }
-
-        .notification-status {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: #4caf50;
-            box-shadow: 0 0 10px #4caf50;
-            animation: pulse 2s infinite;
-        }
-
-        .dot.warning {
-            background: #ffaa33;
-            box-shadow: 0 0 10px #ffaa33;
-        }
-
-        @keyframes pulse {
-            0% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.7; transform: scale(1.1); }
-            100% { opacity: 1; transform: scale(1); }
-        }
-
-        .install-btn {
-            background: rgba(255, 255, 255, 0.15);
-            border: none;
-            color: white;
-            padding: 10px 20px;
+        .header {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
             border-radius: 30px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 30px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.2);
+            text-align: center;
         }
 
-        .install-btn:hover {
-            background: rgba(255, 255, 255, 0.25);
-        }
-
-        .logo-section {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            margin-bottom: 32px;
-        }
-
-        .logo-icon {
-            font-size: 42px;
-            color: #ffd700;
-            background: rgba(255, 215, 0, 0.15);
-            padding: 16px;
-            border-radius: 24px;
-        }
-
-        .logo-text h1 {
-            font-weight: 800;
-            font-size: 2.2rem;
+        .header h1 {
             color: white;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            font-size: 2.5em;
+            margin-bottom: 10px;
         }
 
-        .logo-text p {
+        .header p {
             color: #b0d4e8;
+            font-size: 1.1em;
         }
 
         .alert-creator {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 32px;
-            padding: 28px;
-            margin-bottom: 32px;
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 30px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.2);
         }
 
-        .creator-title {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-            font-weight: 700;
-            color: white;
-            margin-bottom: 24px;
-            font-size: 1.3rem;
-        }
-
-        .input-field {
+        textarea {
             width: 100%;
-            padding: 18px 20px;
-            border: 2px solid rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border: 2px solid rgba(255,255,255,0.2);
             border-radius: 20px;
-            font-size: 1rem;
-            background: rgba(0, 0, 0, 0.3);
+            font-size: 16px;
+            background: rgba(0,0,0,0.3);
+            color: white;
+            margin-bottom: 20px;
+            resize: vertical;
+        }
+
+        textarea::placeholder {
+            color: rgba(255,255,255,0.5);
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #ffd700;
+        }
+
+        .severity-selector {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .severity-btn {
+            flex: 1;
+            min-width: 120px;
+            padding: 18px;
+            border: none;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .severity-btn.critical {
+            background: rgba(255,68,68,0.2);
+            color: #ff8888;
+            border-color: #ff4444;
+        }
+
+        .severity-btn.critical.active {
+            background: #ff4444;
+            color: white;
+            transform: scale(1.02);
+            box-shadow: 0 0 20px #ff4444;
+        }
+
+        .severity-btn.warning {
+            background: rgba(255,170,51,0.2);
+            color: #ffbb55;
+            border-color: #ffaa33;
+        }
+
+        .severity-btn.warning.active {
+            background: #ffaa33;
+            color: #0a2e42;
+            transform: scale(1.02);
+            box-shadow: 0 0 20px #ffaa33;
+        }
+
+        .severity-btn.info {
+            background: rgba(76,175,80,0.2);
+            color: #88cc88;
+            border-color: #4caf50;
+        }
+
+        .severity-btn.info.active {
+            background: #4caf50;
+            color: white;
+            transform: scale(1.02);
+            box-shadow: 0 0 20px #4caf50;
+        }
+
+        .send-btn {
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(145deg, #ffd700, #ffb300);
+            border: none;
+            border-radius: 50px;
+            color: #0a2e42;
+            font-weight: 800;
+            font-size: 1.3em;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-bottom: 4px solid #c28f00;
+        }
+
+        .send-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(255,215,0,0.3);
+        }
+
+        .alerts-list {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 30px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .alerts-list h3 {
             color: white;
             margin-bottom: 20px;
         }
 
-        .input-field:focus {
-            border-color: #ffd700;
-            outline: none;
-            box-shadow: 0 0 0 4px rgba(255, 215, 0, 0.1);
+        .alert-card {
+            background: rgba(255,255,255,0.05);
+            border-left: 5px solid;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 15px;
+            color: white;
         }
 
-        .alert-type-selector {
-            display: flex;
-            gap: 16px;
-            margin-bottom: 24px;
-            flex-wrap: wrap;
-        }
+        .alert-card.critical { border-left-color: #ff4444; }
+        .alert-card.warning { border-left-color: #ffaa33; }
+        .alert-card.info { border-left-color: #4caf50; }
 
-        .type-option {
-            flex: 1 1 140px;
-            background: rgba(0, 0, 0, 0.3);
-            border: 2px solid rgba(255, 255, 255, 0.15);
-            border-radius: 40px;
-            padding: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .type-option.selected {
-            background: #ffd700;
-            border-color: #ffd700;
-            color: #0a2e42;
-            transform: scale(1.02);
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
-        }
-
-        .btn-send {
-            width: 100%;
-            background: linear-gradient(145deg, #ffd700, #ffb300);
-            border: none;
-            border-radius: 50px;
-            padding: 18px;
-            color: #0a2e42;
-            font-weight: 800;
-            font-size: 1.2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-            border-bottom: 4px solid #c28f00;
-        }
-
-        .btn-send:hover {
-            transform: translateY(-2px);
-            border-bottom-width: 2px;
-            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4);
-        }
-
-        .feed-header {
+        .alert-header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin: 20px 0;
+            margin-bottom: 10px;
         }
 
-        .feed-header h3 {
+        .alert-severity {
             font-weight: 700;
-            color: white;
-            display: flex;
-            gap: 12px;
+            text-transform: uppercase;
         }
 
-        .alert-card {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 28px;
-            padding: 24px;
-            margin-bottom: 18px;
-            border-left: 12px solid;
-            transition: all 0.2s;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-left-width: 12px;
+        .alert-time {
+            color: rgba(255,255,255,0.5);
+            font-size: 0.9em;
         }
 
-        .alert-card:hover {
-            transform: translateX(5px);
+        .alert-message {
+            font-size: 1.1em;
+            margin-bottom: 8px;
         }
 
-        .alert-critical { border-left-color: #ff4444; background: rgba(255, 68, 68, 0.1); }
-        .alert-warning { border-left-color: #ffaa33; background: rgba(255, 170, 51, 0.1); }
-        .alert-info { border-left-color: #4caf50; background: rgba(76, 175, 80, 0.1); }
-
-        .test-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: white;
-            padding: 12px;
-            border-radius: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            cursor: pointer;
-            margin-top: 20px;
-            width: 100%;
+        .alert-sender {
+            color: rgba(255,255,255,0.5);
+            font-size: 0.9em;
         }
 
-        .test-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        .hidden {
+        .status {
+            text-align: center;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 50px;
             display: none;
         }
 
-        @keyframes slideUp {
-            from { transform: translate(-50%, 100%); opacity: 0; }
-            to { transform: translate(-50%, 0); opacity: 1; }
+        .status.success {
+            background: rgba(76,175,80,0.2);
+            color: #88cc88;
+            border: 1px solid #4caf50;
+            display: block;
         }
 
-        @keyframes fadeOut {
-            from { opacity: 1; }
-            to { opacity: 0; }
+        .status.error {
+            background: rgba(255,68,68,0.2);
+            color: #ff8888;
+            border: 1px solid #ff4444;
+            display: block;
         }
 
-        @media (max-width: 480px) {
-            .app-container { padding: 20px 16px; }
-            .logo-text h1 { font-size: 1.8rem; }
+        .setup-instructions {
+            background: rgba(0,0,0,0.3);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .setup-instructions ol {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+
+        .setup-instructions li {
+            margin-bottom: 8px;
+            color: #b0d4e8;
         }
     </style>
 </head>
 <body>
-    <div class="app-container">
-        <div class="status-bar">
-            <div class="notification-status" id="notificationStatus">
-                <span class="dot" id="statusDot"></span>
-                <span id="statusText">Initializing...</span>
-            </div>
-            <button id="installPWA" class="install-btn hidden">
-                <i class="fas fa-download"></i> Install App
-            </button>
+    <div class="container">
+        <div class="header">
+            <h1>🚨 InformaCast Pro</h1>
+            <p>Send push notifications that ring your phone even when app is closed</p>
         </div>
 
-        <div class="logo-section">
-            <div class="logo-icon">
-                <i class="fas fa-bullhorn"></i>
-            </div>
-            <div class="logo-text">
-                <h1>InformaCast Pro</h1>
-                <p><i class="fas fa-bell"></i> Push alerts when app is closed</p>
-            </div>
+        <!-- Setup Instructions (shown initially) -->
+        <div class="setup-instructions" id="setupInstructions">
+            <h3>📱 Quick Setup:</h3>
+            <ol>
+                <li>1. Install "WirePusher" from Google Play Store on your phone</li>
+                <li>2. Open WirePusher and copy your Device ID</li>
+                <li>3. Update the SQL with your Device ID</li>
+                <li>4. Run the SQL in Supabase</li>
+                <li>5. Update SUPABASE_URL and SUPABASE_ANON_KEY below</li>
+            </ol>
+            <p style="margin-top: 10px; color: #ffd700;">After setup, alerts will ring your phone immediately!</p>
         </div>
+
+        <div id="status" class="status"></div>
 
         <div class="alert-creator">
-            <div class="creator-title">
-                <i class="fas fa-bolt" style="color: #ffd700;"></i> 
-                Broadcast Emergency Alert
-            </div>
-            <textarea id="alertMessage" class="input-field" placeholder="Type emergency alert message..." rows="2"></textarea>
+            <textarea id="message" placeholder="Enter your alert message..." rows="3">Test alert - This should ring my phone!</textarea>
             
-            <div class="alert-type-selector" id="severitySelector">
-                <div class="type-option selected" data-type="critical">
-                    <i class="fas fa-skull-crossbones"></i> CRITICAL
-                </div>
-                <div class="type-option" data-type="warning">
-                    <i class="fas fa-exclamation-triangle"></i> WARNING
-                </div>
-                <div class="type-option" data-type="info">
-                    <i class="fas fa-info-circle"></i> INFO
-                </div>
+            <div class="severity-selector">
+                <button class="severity-btn critical active" onclick="setSeverity('critical')">🔴 CRITICAL</button>
+                <button class="severity-btn warning" onclick="setSeverity('warning')">🟠 WARNING</button>
+                <button class="severity-btn info" onclick="setSeverity('info')">🔵 INFO</button>
             </div>
-
-            <button id="publishAlertBtn" class="btn-send">
-                <i class="fas fa-paper-plane"></i> SEND PUSH ALERT
+            
+            <button class="send-btn" onclick="sendAlert()">
+                📢 SEND ALERT (Phone will ring!)
             </button>
         </div>
 
-        <div class="feed-header">
-            <h3><i class="fas fa-broadcast-tower"></i> Live Alerts</h3>
-            <button id="refreshBtn" style="background: rgba(255,255,255,0.1); border: none; color: white; padding: 10px 18px; border-radius: 30px; cursor: pointer;">
-                <i class="fas fa-sync-alt"></i> Refresh
-            </button>
-        </div>
-
-        <div id="alertFeed">
-            <div style="text-align: center; padding: 40px; color: rgba(255,255,255,0.5);">
-                <i class="fas fa-circle-notch fa-spin fa-2x"></i>
-                <p style="margin-top: 10px;">Loading alerts...</p>
+        <div class="alerts-list">
+            <h3>📋 Recent Alerts</h3>
+            <div id="alertsList">
+                <div style="text-align: center; color: rgba(255,255,255,0.5); padding: 20px;">
+                    <i class="fas fa-circle-notch fa-spin"></i> Loading alerts...
+                </div>
             </div>
         </div>
-
-        <button id="testNotificationBtn" class="test-btn">
-            <i class="fas fa-bell"></i> Test Push on This Device
-        </button>
     </div>
 
     <script>
         // =============================================
-        // CONFIGURATION - UPDATE THESE!
+        // CONFIGURATION - UPDATE THESE WITH YOUR VALUES
         // =============================================
-        const SUPABASE_URL = 'https://asvvxbrngudgerkxzwrn.supabase.co'; // REPLACE WITH YOUR URL
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFzdnZ4YnJuZ3VkZ2Vya3h6d3JuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEwOTgzMzQsImV4cCI6MjA4NjY3NDMzNH0.MLo5dQs4-jGcc5OZAN1NtGX1BKdkqxSX-FsFxxexQXw'; // REPLACE WITH YOUR KEY
-        const VAPID_PUBLIC_KEY = 'BGeZRzV9yXq8QgYq8QgYq8QgYq8QgYq8QgYq8QgYq8QgYq8QgYq8QgYq8QgYq8QgYq8QgYq8QgYq8QgYq8QgYq8Q';
-
-        // =============================================
-        // SERVICE WORKER (embedded as string)
-        // =============================================
-        const swCode = `
-        self.addEventListener('install', (event) => {
-            self.skipWaiting();
-        });
-
-        self.addEventListener('activate', (event) => {
-            event.waitUntil(clients.claim());
-        });
-
-        self.addEventListener('push', (event) => {
-            if (!event.data) return;
-            
-            try {
-                const data = event.data.json();
-                
-                let title = '📢 INFO';
-                let vibration = [200, 100, 200];
-                let sound = 'https://www.soundjay.com/misc/sounds/bell-ringing-01.mp3';
-                let icon = 'https://cdn-icons-png.flaticon.com/512/893/893257.png';
-                
-                if (data.severity === 'critical') {
-                    title = '🚨 CRITICAL ALERT';
-                    vibration = [500, 200, 500, 200, 500];
-                    sound = 'https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3';
-                } else if (data.severity === 'warning') {
-                    title = '⚠️ WARNING';
-                    vibration = [300, 100, 300];
-                    sound = 'https://www.soundjay.com/misc/sounds/bell-ringing-04.mp3';
-                }
-
-                const options = {
-                    body: data.message,
-                    icon: icon,
-                    badge: icon,
-                    vibrate: vibration,
-                    sound: sound,
-                    data: { url: '/', severity: data.severity, id: data.id },
-                    actions: [
-                        { action: 'open', title: 'View Alert' },
-                        { action: 'close', title: 'Dismiss' }
-                    ],
-                    tag: 'alert-' + data.id,
-                    renotify: true,
-                    requireInteraction: true,
-                    silent: false
-                };
-
-                event.waitUntil(
-                    self.registration.showNotification(title, options)
-                );
-            } catch (e) {
-                console.error('Push error:', e);
-            }
-        });
-
-        self.addEventListener('notificationclick', (event) => {
-            event.notification.close();
-            
-            if (event.action === 'close') return;
-            
-            event.waitUntil(
-                clients.matchAll({ type: 'window' }).then((clientList) => {
-                    if (clientList.length > 0) {
-                        clientList[0].focus();
-                    } else {
-                        clients.openWindow('/');
-                    }
-                })
-            );
-        });
-        `;
-
+        const SUPABASE_URL = 'https://zwhbpqhrlkxhgrhmgyvx.supabase.co';  // Replace with your URL
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp3aGJwcWhybGt4aGdyaG1neXZ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEwODUzMDUsImV4cCI6MjA4NjY2MTMwNX0.jPcxT1wZMCbPFQkK4qWhLfQkO8MtvVPlyga1i2cto6o';                 // Replace with your key
+        
         // =============================================
         // APP STATE
         // =============================================
-        let swRegistration = null;
-        let selectedSeverity = 'critical';
-        let alerts = [];
-
-        // =============================================
-        // INITIALIZATION
-        // =============================================
-        window.addEventListener('load', async () => {
-            updateStatus('checking', 'Setting up...');
-            await setupServiceWorker();
-            await fetchAlerts();
-            setupEventListeners();
-            checkInstallPrompt();
-        });
-
-        // =============================================
-        // SERVICE WORKER SETUP
-        // =============================================
-        async function setupServiceWorker() {
-            if ('serviceWorker' in navigator) {
-                try {
-                    const blob = new Blob([swCode], { type: 'application/javascript' });
-                    const url = URL.createObjectURL(blob);
-                    swRegistration = await navigator.serviceWorker.register(url, { scope: '/' });
-                    console.log('✅ Service Worker registered');
-                    
-                    await requestNotificationPermission();
-                } catch (error) {
-                    console.error('Service Worker failed:', error);
-                    updateStatus('warning', 'Service Worker failed');
-                }
-            } else {
-                updateStatus('warning', 'Service Worker not supported');
-            }
+        let currentSeverity = 'critical';
+        
+        function setSeverity(severity) {
+            currentSeverity = severity;
+            document.querySelectorAll('.severity-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`.severity-btn.${severity}`).classList.add('active');
         }
-
-        async function requestNotificationPermission() {
-            if (!('Notification' in window)) {
-                updateStatus('warning', 'Notifications not supported');
+        
+        async function sendAlert() {
+            const message = document.getElementById('message').value.trim();
+            if (!message) {
+                showStatus('Please enter a message', 'error');
                 return;
             }
             
-            const permission = await Notification.requestPermission();
-            
-            if (permission === 'granted') {
-                updateStatus('active', 'Notifications active');
-                await subscribeToPush();
-            } else {
-                updateStatus('warning', 'Notifications blocked');
-            }
-        }
-
-        async function subscribeToPush() {
-            try {
-                if (!swRegistration) return;
-                
-                const subscription = await swRegistration.pushManager.subscribe({
-                    userVisibleOnly: true,
-                    applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
-                });
-                
-                console.log('✅ Push subscription created');
-                
-                // Save to Supabase
-                await saveSubscription(subscription);
-            } catch (error) {
-                console.error('Push subscription failed:', error);
-            }
-        }
-
-        async function saveSubscription(subscription) {
-            try {
-                await fetch(`${SUPABASE_URL}/rest/v1/device_tokens`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'apikey': SUPABASE_ANON_KEY,
-                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-                    },
-                    body: JSON.stringify({
-                        expo_push_token: subscription.endpoint,
-                        device_type: navigator.userAgent,
-                        platform: /Mobile|Android|iPhone|iPad/i.test(navigator.userAgent) ? 'mobile' : 'web',
-                        last_active: new Date().toISOString()
-                    })
-                });
-                console.log('✅ Subscription saved to server');
-            } catch (error) {
-                console.log('Failed to save subscription:', error);
-            }
-        }
-
-        // =============================================
-        // SUPABASE OPERATIONS
-        // =============================================
-        async function fetchAlerts() {
-            try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/alerts?order=created_at.desc`, {
-                    headers: {
-                        'apikey': SUPABASE_ANON_KEY,
-                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-                    }
-                });
-                
-                if (!response.ok) throw new Error('Failed to fetch');
-                
-                alerts = await response.json();
-                renderAlerts();
-            } catch (error) {
-                console.log('Using mock data');
-                alerts = [
-                    { 
-                        id: '1', 
-                        message: 'Welcome to InformaCast Pro! Send your first alert.', 
-                        severity: 'info', 
-                        sender: 'system', 
-                        created_at: new Date().toISOString() 
-                    }
-                ];
-                renderAlerts();
-            }
-        }
-
-        async function sendAlert(message, severity) {
             try {
                 const response = await fetch(`${SUPABASE_URL}/rest/v1/alerts`, {
                     method: 'POST',
@@ -570,183 +331,93 @@
                     },
                     body: JSON.stringify({
                         message: message,
-                        severity: severity,
+                        severity: currentSeverity,
                         sender: 'web-user'
                     })
                 });
                 
-                if (!response.ok) throw new Error('Failed to send');
-                
-                // Show local notification
-                if (swRegistration) {
-                    await swRegistration.showNotification(
-                        severity === 'critical' ? '🚨 CRITICAL' : 
-                        severity === 'warning' ? '⚠️ WARNING' : '📢 INFO',
-                        {
-                            body: message,
-                            icon: 'https://cdn-icons-png.flaticon.com/512/893/893257.png',
-                            vibrate: severity === 'critical' ? [500,200,500] : [200,100,200],
-                            requireInteraction: true
-                        }
-                    );
+                if (!response.ok) {
+                    const error = await response.text();
+                    throw new Error(error);
                 }
                 
-                await fetchAlerts();
-                showToast('✅ Alert sent with push notification!');
+                showStatus('✅ Alert sent! Your phone will ring immediately!', 'success');
+                document.getElementById('message').value = '';
+                loadAlerts();
+                
             } catch (error) {
-                console.log('Send failed:', error);
-                showToast('❌ Failed to send alert');
+                console.error('Error:', error);
+                showStatus('❌ Error sending alert. Check Supabase configuration.', 'error');
             }
         }
-
-        // =============================================
-        // UI FUNCTIONS
-        // =============================================
-        function renderAlerts() {
-            const feed = document.getElementById('alertFeed');
+        
+        async function loadAlerts() {
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/alerts?order=created_at.desc&limit=10`, {
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    }
+                });
+                
+                if (!response.ok) return;
+                
+                const alerts = await response.json();
+                displayAlerts(alerts);
+                
+            } catch (error) {
+                console.error('Error loading alerts:', error);
+            }
+        }
+        
+        function displayAlerts(alerts) {
+            const list = document.getElementById('alertsList');
             
             if (!alerts || alerts.length === 0) {
-                feed.innerHTML = '<div style="text-align: center; padding: 40px; color: rgba(255,255,255,0.5);">No alerts</div>';
+                list.innerHTML = '<p style="text-align: center; color: rgba(255,255,255,0.5);">No alerts yet</p>';
                 return;
             }
             
-            feed.innerHTML = alerts.map(alert => `
-                <div class="alert-card alert-${alert.severity}">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-                        <span style="font-weight: bold; color: ${alert.severity === 'critical' ? '#ff4444' : alert.severity === 'warning' ? '#ffaa33' : '#4caf50'}">
-                            ${alert.severity.toUpperCase()}
-                        </span>
-                        <span style="color: rgba(255,255,255,0.5); font-size: 0.8rem;">
-                            ${new Date(alert.created_at).toLocaleTimeString()}
-                        </span>
+            let html = '';
+            alerts.forEach(alert => {
+                const time = new Date(alert.created_at).toLocaleTimeString();
+                html += `
+                    <div class="alert-card ${alert.severity}">
+                        <div class="alert-header">
+                            <span class="alert-severity">${alert.severity.toUpperCase()}</span>
+                            <span class="alert-time">${time}</span>
+                        </div>
+                        <div class="alert-message">${escapeHtml(alert.message)}</div>
+                        <div class="alert-sender">From: ${escapeHtml(alert.sender)}</div>
                     </div>
-                    <div style="color: white; font-size: 1.1rem; margin-bottom: 10px;">
-                        ${escapeHtml(alert.message)}
-                    </div>
-                    <div style="color: rgba(255,255,255,0.5); font-size: 0.9rem;">
-                        <i class="fas fa-user"></i> ${escapeHtml(alert.sender)}
-                    </div>
-                </div>
-            `).join('');
+                `;
+            });
+            list.innerHTML = html;
         }
-
-        function updateStatus(status, message) {
-            const dot = document.getElementById('statusDot');
-            const text = document.getElementById('statusText');
-            
-            dot.className = 'dot';
-            if (status === 'warning') {
-                dot.classList.add('warning');
-            }
-            text.textContent = message;
-        }
-
-        function showToast(message) {
-            const toast = document.createElement('div');
-            toast.style.cssText = `
-                position: fixed;
-                bottom: 20px;
-                left: 50%;
-                transform: translateX(-50%);
-                background: #ffd700;
-                color: #0a2e42;
-                padding: 16px 28px;
-                border-radius: 50px;
-                font-weight: bold;
-                z-index: 9999;
-                animation: slideUp 0.3s;
-                box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            `;
-            toast.textContent = message;
-            document.body.appendChild(toast);
-            
-            setTimeout(() => {
-                toast.style.animation = 'fadeOut 0.3s';
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
-        }
-
+        
         function escapeHtml(text) {
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
         }
-
-        function urlBase64ToUint8Array(base64String) {
-            const padding = '='.repeat((4 - base64String.length % 4) % 4);
-            const base64 = (base64String + padding)
-                .replace(/\-/g, '+')
-                .replace(/_/g, '/');
-            const rawData = window.atob(base64);
-            const outputArray = new Uint8Array(rawData.length);
-            for (let i = 0; i < rawData.length; ++i) {
-                outputArray[i] = rawData.charCodeAt(i);
-            }
-            return outputArray;
+        
+        function showStatus(message, type) {
+            const status = document.getElementById('status');
+            status.className = `status ${type}`;
+            status.textContent = message;
+            setTimeout(() => {
+                status.className = 'status';
+            }, 5000);
         }
-
-        function checkInstallPrompt() {
-            window.addEventListener('beforeinstallprompt', (e) => {
-                e.preventDefault();
-                document.getElementById('installPWA').classList.remove('hidden');
-                document.getElementById('installPWA').onclick = () => {
-                    e.prompt();
-                    document.getElementById('installPWA').classList.add('hidden');
-                };
-            });
-
-            if (window.matchMedia('(display-mode: standalone)').matches) {
-                document.getElementById('installPWA').classList.add('hidden');
-            }
-        }
-
-        function setupEventListeners() {
-            // Severity selector
-            document.querySelectorAll('.type-option').forEach(opt => {
-                opt.addEventListener('click', () => {
-                    document.querySelectorAll('.type-option').forEach(o => o.classList.remove('selected'));
-                    opt.classList.add('selected');
-                    selectedSeverity = opt.dataset.type;
-                });
-            });
-
-            // Publish button
-            document.getElementById('publishAlertBtn').addEventListener('click', () => {
-                const message = document.getElementById('alertMessage').value.trim();
-                if (message) {
-                    sendAlert(message, selectedSeverity);
-                    document.getElementById('alertMessage').value = '';
-                } else {
-                    showToast('⚠️ Please enter an alert message');
-                }
-            });
-
-            // Refresh button
-            document.getElementById('refreshBtn').addEventListener('click', fetchAlerts);
-
-            // Test button
-            document.getElementById('testNotificationBtn').addEventListener('click', async () => {
-                if (swRegistration) {
-                    await swRegistration.showNotification('🔔 Test Notification', {
-                        body: 'Push notifications are working!',
-                        icon: 'https://cdn-icons-png.flaticon.com/512/893/893257.png',
-                        vibrate: [200, 100, 200],
-                        requireInteraction: true
-                    });
-                    showToast('✅ Test notification sent');
-                } else {
-                    showToast('❌ Service Worker not ready');
-                }
-            });
-
-            // Enter key to send
-            document.getElementById('alertMessage').addEventListener('keypress', (e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    document.getElementById('publishAlertBtn').click();
-                }
-            });
-        }
+        
+        // Load alerts on page load and every 10 seconds
+        loadAlerts();
+        setInterval(loadAlerts, 10000);
+        
+        // Hide setup instructions after 30 seconds
+        setTimeout(() => {
+            document.getElementById('setupInstructions').style.display = 'none';
+        }, 30000);
     </script>
 </body>
 </html>
